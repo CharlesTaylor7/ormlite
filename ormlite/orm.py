@@ -41,7 +41,7 @@ class DatabaseConnection(Protocol):
     def close(self) -> None:
         ...
 
-    def execute(self, statement: str) -> sqlite3.Cursor:
+    def execute(self, statement: str, **kwargs) -> sqlite3.Cursor:
         ...
 
 
@@ -157,9 +157,12 @@ TABLE_TO_MODEL: dict[str, type] = dict()
 ADAPTERS: list[Adapter] = []
 
 
+def models() -> dict[str, type]:
+    return TABLE_TO_MODEL
+
+
 def adapters() -> Iterable[Adapter]:
     return ADAPTERS
-
 
 def sql_table_name(model: type) -> str:
     return MODEL_TO_TABLE[model]

@@ -2,12 +2,11 @@ import re
 import dataclasses as dc
 import logging
 
-from app import orm
-from app.orm import column_def
+from ormlite import orm
+from ormlite.orm import column_def, DatabaseConnection
+
 
 logger = logging.getLogger(__name__)
-
-__all__ = ('run')
 
 
 # ASSUMPTIONS:
@@ -33,18 +32,18 @@ def run(db: DatabaseConnection):
     sql_table_defs = {row[0]: row[1] for row in cursor}
 
     # create new tables
-    for table_name, model in db.models.items():
+    for table_name, model in orm.models().items():
         if table_name not in sql_table_defs:
             create_table(db, model)
 
     for table_name, sql in sql_table_defs.items():
         # drop tables
-        if table_name not in db.models:
+        if table_name not in orm.models():
             drop_table(db, table_name)
             continue
 
         # migrate columns for existing tables
-        fields = dc.fields(db.models[table_name])
+        fields = dc.fields(orm.models()[table_name])
 
         field_names = {field.name for field in fields}
         column_names = get_column_names(sql)
