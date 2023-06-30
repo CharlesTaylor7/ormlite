@@ -72,7 +72,7 @@ class SelectQuery(Generic[Model]):
         self.extra_columns = list(fields)
         return self
 
-    def where(self, clause) -> Self:
+    def where(self, clause: str) -> Self:
         if self.where_clause == "":
             self.where_clause = f"WHERE {clause}"
         else:
@@ -80,11 +80,11 @@ class SelectQuery(Generic[Model]):
 
         return self
 
-    def order_by(self, clause) -> Self:
+    def order_by(self, clause: str) -> Self:
         self.order_by_clause = f"ORDER BY {clause}"
         return self
 
-    def limit(self, limit) -> Self:
+    def limit(self, limit: int) -> Self:
         self.limit_clause = f"LIMIT {limit}"
         return self
 
@@ -123,10 +123,10 @@ class SelectQuery(Generic[Model]):
             for row in cursor
         )
 
-    def _to_model(self, row):
+    def _to_model(self, row: tuple):
         return self.model(*row[: self.model_field_count])
 
-    def _to_extra(self, row):
+    def _to_extra(self, row: tuple):
         extra = {}
         rest = row[self.model_field_count:]
         for name, value in zip(self.extra_columns, rest):

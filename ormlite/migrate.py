@@ -1,6 +1,8 @@
 import re
 import dataclasses as dc
 import logging
+from typing import Any
+from collections.abc import Sequence
 
 from ormlite import orm
 from ormlite.orm import column_def, DatabaseConnection
@@ -82,7 +84,7 @@ def get_column_names(raw_table_sql: str) -> set[str]:
     return col_names
 
 
-def index_of(fields, name: str) -> int:
+def index_of(fields: Sequence[dc.Field[Any]], name: str) -> int:
     return next(i for i, f in enumerate(fields) if f.name == name)
 
 

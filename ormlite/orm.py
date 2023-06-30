@@ -41,13 +41,13 @@ class DatabaseConnection(Protocol):
     def close(self) -> None:
         ...
 
-    def execute(self, statement: str, **kwargs) -> sqlite3.Cursor:
+    def execute(self, statement: str, **kwargs: Any) -> sqlite3.Cursor:
         ...
 
 
 @dataclass_transform()
 def model(sql_table_name: str):
-    def wrap(cls):
+    def wrap(cls: type):
         logger.debug(f"applying @model({sql_table_name}) to {cls})")
         # always a dataclass
         cls = dc.dataclass(cls, slots=True)  # pyright: ignore
@@ -65,14 +65,14 @@ class ForeignKey:
     table: str
     key: Optional[str] = None
 
-    def to_constraint(self, field) -> str:
+    def to_constraint(self, field: dc.Field) -> str:
         return (
             f"FOREIGN KEY ({field.name}) "
             f"REFERENCES {self.table}({self.key or field.name})"
         )
 
 
-def field(*, pk: bool = False, fk: Optional[str] = None, **kwargs):
+def field(*, pk: bool = False, fk: Optional[str] = None, **kwargs: Any):
     foreign_key: Optional[ForeignKey] = None
     if fk:
         parts = fk.split(".")
@@ -131,7 +131,7 @@ def to_sql_literal(value: Any) -> str:
     raise NotImplementedError
 
 
-def column_def(field) -> str:
+def column_def(field: dc.Field) -> str:
     # not null is applied to all fields automatically
     # use default = None to get a nullable field
     constraint = "NOT NULL"
