@@ -22,14 +22,13 @@ logger = logging.getLogger(__name__)
 
 T = TypeVar("T")
 
+def tap(val: T) -> T:
+    print(val)
+    return val
 
 class Adapter(Generic[T]):
     sql_name: ClassVar[str]
-
-    @final
-    @property
-    def python_type(self) -> type[T]:
-        return typing.get_args(self)[0]
+    python_type: ClassVar[type]
 
     def convert(self, b: bytes) -> T:
         raise NotImplemented
