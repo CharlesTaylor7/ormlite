@@ -1,8 +1,7 @@
 import logging
 import dataclasses as dc
 import sqlite3
-from glom import glom, T
-from typing import Self, Generic, TypeVar, Iterable
+from typing import Self, Generic, TypeVar, Iterable, Optional
 from dataclasses import dataclass
 
 from ormlite import orm
@@ -44,28 +43,15 @@ class SelectQuery(Generic[Model]):
         field = next(
             field
             for field in dc.fields(self.model)
-            if glom(field, T.metadata["fk"].table, default=None) == table
+            if get_fk_table(field) == table
         )
-        self.join_clause = self._prepare_join(
+        self.join_clause = _prepare_join(
             source_table=orm.sql_table_name(self.model),
             target_table=table,
             source_key=field.name,
             target_key=field.metadata["fk"].key or field.name,
         )
         return self
-
-    def _prepare_join(
-        self,
-        *,
-        source_table: str,
-        source_key: str,
-        target_table: str,
-        target_key: str,
-    ) -> str:
-        return f"""
-            JOIN {target_table}
-            ON {target_table}.{target_key} = {source_table}.{source_key}
-        """
 
 
     def extra(self, *fields: str) -> Self:
@@ -157,3 +143,22 @@ def upsert(db: DbConnection, records: list[Model], *, update: list[str]):
         SET {','.join(f'{col}=excluded.{col}' for col in update)}
         """
     )
+
+
+def get_fk_table(field: dc.Field) -> Optional[str]:
+    fk = field.metadata.get("fk")
+    if not fk:
+        return None
+    return fk.table
+
+def _prepare_join(
+    *,
+    source_table: str,
+    source_key: str,
+    target_table: str,
+    target_key: str,
+) -> str:
+    return f"""
+        JOIN {target_table}
+        ON {target_table}.{target_key} = {source_table}.{source_key}
+    """

@@ -2,6 +2,7 @@ import typing
 import logging
 import dataclasses as dc
 import sqlite3
+from collections.abc import Sequence
 from typing import (
     dataclass_transform,
     final,
@@ -14,7 +15,6 @@ from typing import (
     Protocol,
 )
 from datetime import datetime, date
-from glom import glom
 
 from ormlite.utils import cast, get_optional_type_arg
 
@@ -79,8 +79,8 @@ def field(*, pk: bool = False, fk: Optional[str] = None, **kwargs: Any):
         if len(parts) > 2:
             raise Exception("invalid fk")
         table = parts[0]
-        key = glom(parts, "1", default=None)
-        foreign_key = ForeignKey(table=cast(table, str), key=cast(key, Optional[str]))
+        key = get(parts, 1)
+        foreign_key = ForeignKey(table=cast(table, str), key=key)
 
     return dc.field(
         **kwargs,
@@ -89,6 +89,12 @@ def field(*, pk: bool = False, fk: Optional[str] = None, **kwargs: Any):
             "fk": foreign_key,
         },
     )
+
+def get(seq: Sequence[T], index: int) -> Optional[T]:
+    if index >= len(seq):
+        return None
+    else:
+        return seq[index]
 
 
 # TODO: can we query this info from SQLite's list of converters & adapters?
