@@ -97,6 +97,7 @@ def create_table(db: DatabaseConnection, model: type):
     )
     name = orm.sql_table_name(model)
     sql_constraints = getattr(model, "sql_constraints", [])
+
     db.execute(
         f"""
         CREATE TABLE "{name}" (
@@ -105,6 +106,7 @@ def create_table(db: DatabaseConnection, model: type):
         """,
         name=orm.sql_table_name(model),
     )
+    logger.info(f"Table created: {name}")
 
 
 def fk_constraints(model: type):
@@ -122,3 +124,4 @@ def drop_table(db: DatabaseConnection, table_name: str):
         DROP TABLE {table_name}
         """,
     )
+    logger.info(f"Table dropped: {table_name}")

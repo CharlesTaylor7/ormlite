@@ -16,7 +16,7 @@ from typing import (
 from datetime import datetime, date
 from glom import glom
 
-from ormlite.utils import cast
+from ormlite.utils import cast, get_optional_type_arg
 
 logger = logging.getLogger(__name__)
 
@@ -132,6 +132,8 @@ def to_sql_literal(value: Any) -> str:
 
 
 def column_def(field: dc.Field) -> str:
+    optional_inner_type = get_optional_type_arg(field.type)
+
     # not null is applied to all fields automatically
     # use default = None to get a nullable field
     constraint = "NOT NULL"
@@ -139,7 +141,7 @@ def column_def(field: dc.Field) -> str:
     if field.metadata.get("pk"):
         constraint = "PRIMARY KEY"
 
-    elif field.default is None:
+    elif field.default is None or optional_inner_type is not None:
         constraint = ""
 
     elif field.default != dc.MISSING:
@@ -149,7 +151,8 @@ def column_def(field: dc.Field) -> str:
     elif field.default_factory != dc.MISSING:
         constraint = ""
 
-    return f"{field.name} {default_type_mappings[field.type]} {constraint}"
+    field_type = optional_inner_type or field.type
+    return f"{field.name} {default_type_mappings[field_type]} {constraint}"
 
 
 MODEL_TO_TABLE: dict[type, str] = dict()
