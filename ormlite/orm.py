@@ -142,11 +142,11 @@ def column_def(field: dc.Field) -> str:
     elif field.default is None:
         constraint = ""
 
-    elif not isinstance(field.default, dc._MISSING_TYPE):
+    elif field.default != dc.MISSING:
         constraint = f"DEFAULT {to_sql_literal(field.default)} NOT NULL"
 
     # nullable, since we can't convert a python factory into a sql factory
-    elif not isinstance(field.default_factory, dc._MISSING_TYPE):
+    elif field.default_factory != dc.MISSING:
         constraint = ""
 
     return f"{field.name} {default_type_mappings[field.type]} {constraint}"
