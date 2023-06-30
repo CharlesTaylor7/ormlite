@@ -1,0 +1,8 @@
+[tool.pyright]
+include = ["ormlite/"]
+# typeCheckingMode = "strict"
+
+reportUnusedImport = "information"
+reportUnusedVariable = "information"
+reportPrivateUsage = "warning"
+reportMissingTypeStubs = "warning"
