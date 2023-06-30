@@ -10,10 +10,6 @@ from ormlite.orm import to_sql_literal, DatabaseConnection as DbConnection
 logger = logging.getLogger(__name__)
 
 
-# having 2nd thoughts about this
-# I need a disciplined way to perform joins.
-# I also want to enforce that clauses of a query are provided in a certain order and not duplicated because that results in issues
-
 Model = TypeVar("Model")
 
 
@@ -23,7 +19,6 @@ class Row(Generic[Model]):
     extra: dict
 
 
-    # for si
 class SelectQuery(Generic[Model]):
     db: DbConnection
     model: type
