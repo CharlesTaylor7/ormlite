@@ -1,11 +1,12 @@
+import typing
 import logging
 import dataclasses as dc
 import sqlite3
 from typing import (
+    dataclass_transform,
+    final,
     Any,
     Optional,
-    Self,
-    dataclass_transform,
     Iterable,
     TypeVar,
     ClassVar,
@@ -24,14 +25,16 @@ T = TypeVar("T")
 
 class Adapter(Generic[T]):
     sql_name: ClassVar[str]
-    python_type: ClassVar[type]
 
-    @classmethod
-    def convert(cls, b: bytes) -> T:
+    @final
+    @property
+    def python_type(self) -> type[T]:
+        return typing.get_args(self)[0]
+
+    def convert(self, b: bytes) -> T:
         raise NotImplemented
 
-    @classmethod
-    def adapt(cls, val: T) -> str:
+    def adapt(self, val: T) -> str:
         raise NotImplemented
 
 
@@ -173,7 +176,7 @@ def _register_model(sql_table_name: str, model: type):
         MODEL_TO_TABLE[model] = sql_table_name
 
 
-def register_adapter(adapter: Adapter):
+def register_adapter(adapter: Adapter[Any]):
     ADAPTERS.append(adapter)
     sqlite3.register_adapter(adapter.python_type, adapter.adapt)
     sqlite3.register_converter(adapter.sql_name, adapter.convert)

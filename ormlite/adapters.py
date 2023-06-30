@@ -1,4 +1,3 @@
-from typing import Optional
 from datetime import datetime, date
 
 from ormlite import orm
@@ -13,9 +12,8 @@ def register():
 
 class BoolAdapter(Adapter[bool]):
     sql_name = "BOOL"
-    python_type = bool
 
-    def convert(self, b: bytes) -> Optional[bool]:
+    def convert(self, b: bytes) -> bool:
         if b == b"T":
             return True
         elif b == b"F":
@@ -23,16 +21,12 @@ class BoolAdapter(Adapter[bool]):
         else:
             raise Exception
 
-    def adapt(self, boolean: Optional[bool]):
-        if boolean is None:
-            return None
-        else:
-            return "T" if boolean else "F"
+    def adapt(self, val: bool) -> str:
+        return "T" if val else "F"
 
 
 class DateAdapter(Adapter[date]):
     sql_name = "DATE"
-    python_type = date
 
     def convert(self, b: bytes) -> date:
         return date.fromisoformat(b.decode())
@@ -43,10 +37,9 @@ class DateAdapter(Adapter[date]):
 
 class DateTimeAdapter(Adapter[datetime]):
     sql_name = "TIMESTAMP"
-    python_type = datetime
 
-    def convert(self, b: bytes) -> date:
+    def convert(self, b: bytes) -> datetime:
         return datetime.fromisoformat(b.decode())
 
-    def adapt(self, val):
+    def adapt(self, val: datetime) -> str:
         return val.isoformat()
