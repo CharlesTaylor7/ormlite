@@ -69,16 +69,25 @@ def model(sql_table_name: str):
     if isinstance(sql_table_name, type):
         raise TypeError("@model(sql_table_name) must be called with the sql table name")
 
-    def wrap(cls: type):
-        logger.debug(f"applying @model({sql_table_name}) to {cls})")
-        # always a dataclass
-        model = dc.dataclass(cls, slots=True)  # pyright: ignore
-        validate_model(model)
-        register_model(sql_table_name, cls)
+    def wrap(model: type):
+        if sql_table_name in Context.TABLE_TO_MODEL:
+            logger.warning(
+                f"Reregistering the sql table '{sql_table_name}' with {model}"
+            )
+        else:
+            logger.debug(f"applying @model({sql_table_name}) to {model})")
 
-        return cls
+        # always a dataclass
+        model = dc.dataclass(model, slots=True)  # pyright: ignore
+        validate_model(model)
+
+        Context.TABLE_TO_MODEL[sql_table_name] = model
+        Context.MODEL_TO_TABLE[model] = sql_table_name
+
+        return model
 
     return wrap
+
 
 def validate_model(model: type):
     for field in dc.fields(model):
@@ -193,16 +202,6 @@ def adapters() -> Iterable[Adapter]:
 
 def sql_table_name(model: type) -> str:
     return Context.MODEL_TO_TABLE[model]
-def register_model(sql_table_name: str, model: type):
-    if sql_table_name in Context.MODEL_TO_TABLE:
-        logger.warning(
-            f"Reregistering the sql table '{sql_table_name}' with {model}"
-        )
-
-    Context.TABLE_TO_MODEL[sql_table_name] = model
-    model.sql_table_name = sql_table_name # pyright: ignore
-    # Context.MODEL_TO_TABLE[model] = sql_table_name
-
 
 def register_adapter(adapter: Adapter[Any]):
     Context.ADAPTERS.append(adapter)
