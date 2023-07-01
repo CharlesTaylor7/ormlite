@@ -4,7 +4,7 @@ from typing import Optional
 from unittest import mock
 from datetime import datetime, date
 
-from ormlite import model, field, select, upsert, migrate
+from ormlite import model, field, select, upsert, migrate, connect_to_sqlite
 
 from .utils import unregister_all_models
 
@@ -25,11 +25,7 @@ def test_select_tables():
         id: int = field(pk=True)
         name: str
 
-    db = sqlite3.connect(
-        ":memory:",
-        isolation_level=None,
-        detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES,
-    )
+    db = connect_to_sqlite(":memory:")
     tables = [
         Table(id="dining", legs=4, color_id=2, purchased_at=date(2023, 6, 6)),
         Table(id="patio", legs=5, color_id=3, purchased_at=date(1981, 2, 2)),

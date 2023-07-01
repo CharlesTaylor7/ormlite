@@ -4,7 +4,7 @@ from typing import Optional
 from unittest import mock
 from datetime import datetime
 
-from ormlite import model, field, migrate
+from ormlite import model, field, migrate, connect_to_sqlite
 from ormlite.migrate import parse_column_names
 
 from .utils import unregister_all_models
@@ -35,7 +35,7 @@ def test_migrate_lifecycle():
         phone: Optional[int] = None
         subscribed_at: datetime = field(default_factory=datetime.now)
 
-    db = sqlite3.connect(":memory:", isolation_level=None)
+    db = connect_to_sqlite(":memory:")
 
     # Act
     migrate(db)
