@@ -40,6 +40,7 @@ class DatabaseConnection(Protocol):
     def execute(self, statement: str, **kwargs: Any) -> sqlite3.Cursor:
         ...  # pragma: no cover
 
+
 class Context:
     ADAPTERS: dict[type, Adapter] = dict()
     PYTHON_TO_SQL_MAPPING: dict[type, str] = dict()
@@ -158,6 +159,7 @@ def to_sql_literal(value: Any) -> str:
 
     raise MissingAdapterError
 
+
 def to_sql_type(field: type) -> str:
     python_type = get_optional_type_arg(field) or field
     sql_type = Context.PYTHON_TO_SQL_MAPPING.get(python_type)
@@ -166,6 +168,7 @@ def to_sql_type(field: type) -> str:
         return sql_type
 
     raise MissingAdapterError
+
 
 def column_def(field: dc.Field) -> str:
     optional_inner_type = get_optional_type_arg(field.type)
@@ -196,6 +199,7 @@ def models() -> dict[str, type]:
 
 def sql_table_name(model: type) -> str:
     return Context.MODEL_TO_TABLE[model]
+
 
 def register_adapter(adapter: Adapter[Any]):
     Context.ADAPTERS[adapter.python_type] = adapter

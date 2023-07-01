@@ -10,15 +10,16 @@ from .utils import unregister_all_models
 
 from ormlite.orm import Context
 
+
 def test_select_tables():
     unregister_all_models()
+
     @model("tables")
     class Table:
         id: str = field(pk=True)
         legs: int
         color_id: int = field(fk="colors.id")
         purchased_at: date = date.today()
-
 
     @model("colors")
     class Color:

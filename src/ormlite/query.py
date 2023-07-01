@@ -113,7 +113,9 @@ def select(model: type[Model]) -> SelectQuery[Model]:
     return SelectQuery(model)
 
 
-def upsert(db: DbConnection, records: list[Model], *, update: list[str]): # pyright: ignore
+def upsert(
+    db: DbConnection, records: list[Model], *, update: list[str]
+):  # pyright: ignore
     """
     Insert records, on conflict, update fields but only specific ones
     """

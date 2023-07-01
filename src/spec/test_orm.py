@@ -12,6 +12,7 @@ from .utils import unregister_all_models
 
 def test_bare_model_decorator_is_not_supported():
     with pytest.raises(TypeError):
+
         @model
         class Foo:
             pass
@@ -19,19 +20,23 @@ def test_bare_model_decorator_is_not_supported():
 
 def test_field_unions_not_supported():
     with pytest.raises(MissingAdapterError):
-        @model('union_operator')
+
+        @model("union_operator")
         class Foo:
             bar: str | int
 
     with pytest.raises(MissingAdapterError):
-        @model('double_union')
+
+        @model("double_union")
         class Foo:
             bar: Union[str, int]
 
     with pytest.raises(MissingAdapterError):
-        @model('triple_union')
+
+        @model("triple_union")
         class Foo:
             bar: Union[str, int, float]
+
 
 def test_foreign_key_punning():
     @model("foos")
@@ -63,9 +68,11 @@ def test_foreign_key_qualified():
 
 def test_foreign_key_invalid():
     with pytest.raises(InvalidForeignKeyError):
+
         @model("foos")
         class Foo:
             fk: field(fk="three.part.fk")
+
 
 def test_to_sql_literal__missing_adapter():
     class Foo:
@@ -74,14 +81,18 @@ def test_to_sql_literal__missing_adapter():
     with pytest.raises(MissingAdapterError):
         to_sql_literal(Foo())
 
+
 def test_to_sql_literal__none():
     assert to_sql_literal(None) == "NULL"
+
 
 def test_to_sql_literal__float():
     assert to_sql_literal(3.14) == "3.14"
 
+
 def test_to_sql_literal__date():
     assert to_sql_literal(date(2020, 3, 16)) == "'2020-03-16'"
+
 
 def test_to_sql_literal__date():
     assert to_sql_literal(datetime(2020, 3, 16)) == "'2020-03-16T00:00:00'"

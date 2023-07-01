@@ -1,5 +1,6 @@
 import sqlite3
 
+
 def connect(file_name: str) -> sqlite3.Connection:
     return sqlite3.connect(
         file_name,
