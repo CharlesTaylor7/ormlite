@@ -128,7 +128,7 @@ def to_sql_literal(value: Any) -> str:
     if isinstance(value, (list, tuple)):
         return f"({','.join(to_sql_literal(item) for item in value)})"
 
-    for adapter in ADAPTERS:
+    for adapter in adapters():
         if isinstance(value, adapter.python_type):
             # TODO: sqlite escape text contents
             # ASSUMPTION: custom adapters always encode to text
