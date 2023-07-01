@@ -186,6 +186,13 @@ def _register_model(sql_table_name: str, model: type):
         TABLE_TO_MODEL[sql_table_name] = model
         MODEL_TO_TABLE[model] = sql_table_name
 
+def _unregister_all_models():
+    """
+    For testing only
+    """
+    global MODEL_TO_TABLE, TABLE_TO_MODEL
+    MODEL_TO_TABLE = dict()
+    TABLE_TO_MODEL = dict()
 
 def register_adapter(adapter: Adapter[Any]):
     ADAPTERS.append(adapter)

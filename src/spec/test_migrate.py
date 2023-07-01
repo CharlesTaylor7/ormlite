@@ -4,8 +4,16 @@ from typing import Optional
 from unittest import mock
 from datetime import datetime
 
-from ormlite.orm import model, field
+from ormlite.orm import model, field, _unregister_all_models
 from ormlite.migrate import run
+
+
+def fetch_table_defs(db):
+    return db.execute("""
+        SELECT tbl_name, sql
+        FROM sqlite_schema
+        WHERE type = 'table'
+    """).fetchall()
 
 
 def test_migrate_lifecycle():
@@ -25,12 +33,7 @@ def test_migrate_lifecycle():
     run(db)
 
     # Assert
-    rows = db.execute(
-        """
-        SELECT tbl_name, sql
-        FROM sqlite_schema
-        WHERE type = 'table'
-    """).fetchall()
+    rows = fetch_table_defs(db)
 
     assert rows == [('persons', 'CREATE TABLE "persons" (age INTEGER NOT NULL, name TEXT NOT NULL, funny BOOL NOT NULL, address TEXT, phone INTEGER, subscribed_at TIMESTAMP)')]
 
@@ -45,11 +48,13 @@ def test_migrate_lifecycle():
     run(db)
 
     # Assert
-    rows = db.execute(
-        """
-        SELECT tbl_name, sql
-        FROM sqlite_schema
-        WHERE type = 'table'
-    """).fetchall()
+    assert fetch_table_defs(db) == [('persons', 'CREATE TABLE "persons" (age INTEGER NOT NULL, name TEXT NOT NULL, address TEXT)')]
 
-    assert rows == [('persons', 'CREATE TABLE "persons" (age INTEGER NOT NULL, name TEXT NOT NULL, address TEXT)')]
+    # Arrange: delete models
+    _unregister_all_models()
+
+    # Act
+    run(db)
+
+    # Assert
+    assert fetch_table_defs(db) == []
