@@ -9,6 +9,8 @@ __all__ = (
     "select",
     "upsert",
     "migrate",
+    # TODO: fold param escapes into query api,
+    # so that this doesn't need to be exported
     "to_sql_literal",
 )
 
