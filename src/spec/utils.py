@@ -2,7 +2,7 @@ def unregister_all_models():
     """
     For testing only
     """
-    from ormlite import orm
+    from ormlite.orm import Context
 
-    orm.MODEL_TO_TABLE = dict()
-    orm.TABLE_TO_MODEL = dict()
+    Context.MODEL_TO_TABLE = dict()
+    Context.TABLE_TO_MODEL = dict()
