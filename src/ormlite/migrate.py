@@ -21,8 +21,6 @@ logger = logging.getLogger(__name__)
 # changing constraints, is a tricky multi step process:
 # https://sqlite.org/lang_altertable.html#making_other_kinds_of_table_schema_changes
 def run(db: DatabaseConnection):
-    print("here")
-
     db.execute("""BEGIN EXCLUSIVE TRANSACTION""")
     cursor = db.execute(
         """
@@ -34,7 +32,6 @@ def run(db: DatabaseConnection):
     sql_table_defs = {row[0]: row[1] for row in cursor}
 
     # create new tables
-    print(orm.models())
     for table_name, model in orm.models().items():
         if table_name not in sql_table_defs:
             create_table(db, model)
@@ -55,6 +52,10 @@ def run(db: DatabaseConnection):
 
         new_fields = field_names - column_names
         new_fields = sorted(new_fields, key=lambda x: index_of(fields, x))
+
+        print("column_names", column_names)
+        print("field_names", field_names)
+        print("new_fields", new_fields)
         for field_name in new_fields:
             column = column_def(fields_dict[field_name])
             logger.info(f"Add column for {table_name}: {column}")
@@ -66,6 +67,7 @@ def run(db: DatabaseConnection):
             db.execute(f"ALTER TABLE {table_name} DROP COLUMN {column_name}")
 
     db.execute("""END TRANSACTION""")
+
 
 
 REGEX = re.compile(r'CREATE TABLE "?(?P<table_name>\w+)"?\s*\((?P<defs>[\s\w,\'\(\)]*)')

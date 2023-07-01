@@ -1,11 +1,11 @@
 import sqlite3
-import logging
 from typing import Optional
 from unittest import mock
 from datetime import datetime
 
-from ormlite.orm import model, field, _unregister_all_models
+from ormlite.orm import model, field
 from ormlite.migrate import run
+
 
 
 def fetch_table_defs(db):
@@ -29,7 +29,6 @@ def test_migrate_lifecycle():
     class Person:
         age: int
         name: str
-        funny: bool
         address: Optional[str] = ''
         phone: Optional[int] = None
         subscribed_at: datetime = field(default_factory=datetime.now)
@@ -40,11 +39,25 @@ def test_migrate_lifecycle():
     run(db)
 
     # Assert
-    rows = fetch_table_defs(db)
+    assert fetch_table_defs(db) == [('persons', 'CREATE TABLE "persons" (age INTEGER NOT NULL, name TEXT NOT NULL, address TEXT, phone INTEGER, subscribed_at TIMESTAMP)')]
 
-    assert rows == [('persons', 'CREATE TABLE "persons" (age INTEGER NOT NULL, name TEXT NOT NULL, funny BOOL NOT NULL, address TEXT, phone INTEGER, subscribed_at TIMESTAMP)')]
+    # Arrange: add columns for persons table
+    @model("persons")
+    class Person:
+        age: int
+        name: str
+        funny: bool
+        address: Optional[str] = ''
+        phone: Optional[int] = None
+        subscribed_at: datetime = field(default_factory=datetime.now)
 
-    # Arrange: modify persons table
+    # Act
+    run(db)
+
+    # Assert
+    assert fetch_table_defs(db) == []
+
+    # Arrange: remove columns from persons table
     @model("persons")
     class Person:
         age: int
@@ -64,4 +77,4 @@ def test_migrate_lifecycle():
     run(db)
 
     # Assert
-    assert fetch_table_defs(db) == []
+    assert fetch_table_defs(db) == [('persons', 'CREATE TABLE "persons" (age INTEGER NOT NULL, name TEXT NOT NULL, address TEXT, phone INTEGER, subscribed_at TIMESTAMP, funny BOOL NOT NULL)')]

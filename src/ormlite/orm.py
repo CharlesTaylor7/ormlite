@@ -182,9 +182,8 @@ def _register_model(sql_table_name: str, model: type):
         logger.warning(
             f"Attempt to reregister the sql table '{sql_table_name}' with {model}"
         )
-    else:
-        TABLE_TO_MODEL[sql_table_name] = model
-        MODEL_TO_TABLE[model] = sql_table_name
+    TABLE_TO_MODEL[sql_table_name] = model
+    MODEL_TO_TABLE[model] = sql_table_name
 
 def register_adapter(adapter: Adapter[Any]):
     ADAPTERS.append(adapter)
