@@ -28,10 +28,10 @@ class Adapter(Generic[T]):
     python_type: ClassVar[type]
 
     def convert(self, b: bytes) -> T:
-        ... # pragma: no cover
+        ...  # pragma: no cover
 
     def adapt(self, val: T) -> str:
-        ... # pragma: no cover
+        ...  # pragma: no cover
 
 
 class DatabaseConnection(Protocol):
@@ -71,6 +71,7 @@ class ForeignKey:
 
 def field(*, pk: bool = False, fk: Optional[str] = None, **kwargs: Any):
     foreign_key: Optional[ForeignKey] = None
+    print(pk, fk)
     if fk:
         parts = fk.split(".")
         if len(parts) > 2:
@@ -78,6 +79,7 @@ def field(*, pk: bool = False, fk: Optional[str] = None, **kwargs: Any):
         table = parts[0]
         key = get(parts, 1)
         foreign_key = ForeignKey(table=cast(table, str), key=key)
+        print(foreign_key)
 
     return dc.field(
         **kwargs,
