@@ -14,7 +14,8 @@ from typing import (
 )
 from datetime import datetime, date
 
-from ormlite.utils import not_null, get_optional_type_arg
+from ormlite.errors import MissingAdapterError, InvalidForeignKeyError
+from ormlite.utils import get_optional_type_arg
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +23,7 @@ T = TypeVar("T")
 
 
 class Adapter(Generic[T]):
-    sql_name: ClassVar[str]
+    sql_type: ClassVar[str]
     python_type: ClassVar[type]
 
     def convert(self, b: bytes) -> T:
@@ -48,11 +49,16 @@ def model(sql_table_name: str):
     def wrap(cls: type):
         logger.debug(f"applying @model({sql_table_name}) to {cls})")
         # always a dataclass
-        cls = dc.dataclass(cls, slots=True)  # pyright: ignore
-        _register_model(sql_table_name, cls)
+        model = dc.dataclass(cls, slots=True)  # pyright: ignore
+        validate_model(model)
+        register_model(sql_table_name, model)
         return cls
 
     return wrap
+
+def validate_model(model: type):
+    for field in dc.fields(model):
+        to_sql_type(field.type)
 
 
 @dc.dataclass
@@ -72,10 +78,11 @@ def field(*, pk: bool = False, fk: Optional[str] = None, **kwargs: Any):
     if fk:
         parts = fk.split(".")
         if len(parts) > 2:
-            raise Exception("invalid fk")
+            raise InvalidForeignKeyError
+
         table = parts[0]
         key = get(parts, 1)
-        foreign_key = ForeignKey(table=not_null(table), key=key)
+        foreign_key = ForeignKey(table=(table), key=key)
 
     return dc.field(
         **kwargs,
@@ -99,10 +106,6 @@ default_type_mappings = {
     int: "INTEGER",
     bytes: "BYTES",
     float: "REAL",
-    # https://docs.python.org/3/library/sqlite3.html?highlight=sqlite3#default-adapters-and-converters
-    bool: "BOOL",
-    datetime: "TIMESTAMP",
-    date: "DATE",
 }
 
 
@@ -130,8 +133,21 @@ def to_sql_literal(value: Any) -> str:
             # ASSUMPTION: custom adapters always encode to text
             return f"'{adapter.adapt(value)}'"
 
-    raise NotImplementedError
+    raise MissingAdapterError
 
+def to_sql_type(field: type) -> str:
+    python_type = get_optional_type_arg(field) or field
+    sql_type = default_type_mappings.get(python_type)
+
+    if sql_type is not None:
+        return sql_type
+
+    for adapter in adapters():
+        if adapter.python_type == python_type:
+            return adapter.sql_type
+
+    logger.info(f"python_type: {python_type}")
+    raise MissingAdapterError
 
 def column_def(field: dc.Field) -> str:
     optional_inner_type = get_optional_type_arg(field.type)
@@ -153,8 +169,7 @@ def column_def(field: dc.Field) -> str:
     elif field.default != dc.MISSING:
         constraint = f"DEFAULT {to_sql_literal(field.default)} NOT NULL"
 
-    field_type = optional_inner_type or field.type
-    return f"{field.name} {default_type_mappings[field_type]} {constraint}".strip()
+    return f"{field.name} {to_sql_type(field.type)} {constraint}".strip()
 
 
 MODEL_TO_TABLE: dict[type, str] = dict()
@@ -174,11 +189,12 @@ def sql_table_name(model: type) -> str:
     return MODEL_TO_TABLE[model]
 
 
-def _register_model(sql_table_name: str, model: type):
+def register_model(sql_table_name: str, model: type):
     if sql_table_name in MODEL_TO_TABLE:
         logger.warning(
-            f"Attempt to reregister the sql table '{sql_table_name}' with {model}"
+            f"Reregistering the sql table '{sql_table_name}' with {model}"
         )
+
     TABLE_TO_MODEL[sql_table_name] = model
     MODEL_TO_TABLE[model] = sql_table_name
 
@@ -186,4 +202,4 @@ def _register_model(sql_table_name: str, model: type):
 def register_adapter(adapter: Adapter[Any]):
     ADAPTERS.append(adapter)
     sqlite3.register_adapter(adapter.python_type, adapter.adapt)
-    sqlite3.register_converter(adapter.sql_name, adapter.convert)
+    sqlite3.register_converter(adapter.sql_type, adapter.convert)

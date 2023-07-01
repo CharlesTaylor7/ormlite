@@ -21,9 +21,3 @@ def get_optional_type_arg(ty: type) -> typing.Optional[type]:
         return arg
     else:
         return None
-
-
-def not_null(obj: typing.Optional[T]) -> T:
-    if obj is None:
-        raise TypeError
-    return obj

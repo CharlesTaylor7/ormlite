@@ -11,7 +11,7 @@ def register():
 
 
 class BoolAdapter(Adapter[bool]):
-    sql_name = "BOOL"
+    sql_type = "BOOL"
     python_type = bool
 
     def convert(self, b: bytes) -> bool:
@@ -27,7 +27,7 @@ class BoolAdapter(Adapter[bool]):
 
 
 class DateAdapter(Adapter[date]):
-    sql_name = "DATE"
+    sql_type = "DATE"
     python_type = date
 
     def convert(self, b: bytes) -> date:
@@ -38,7 +38,7 @@ class DateAdapter(Adapter[date]):
 
 
 class DateTimeAdapter(Adapter[datetime]):
-    sql_name = "TIMESTAMP"
+    sql_type = "TIMESTAMP"
     python_type = datetime
 
     def convert(self, b: bytes) -> datetime:
