@@ -63,6 +63,7 @@ class Context:
             mapping[adapter.python_type] = adapter.sql_type
         return mapping
 
+
 @dataclass_transform()
 def model(sql_table_name: str):
     if isinstance(sql_table_name, type):
@@ -190,7 +191,18 @@ def adapters() -> Iterable[Adapter]:
 
 
 def sql_table_name(model: type) -> str:
-    return Context.MODEL_TO_TABLE[model]
+    print(model, hash(model), "sql_table_name")
+    trace_caller()
+    return model.sql_table_name # pyright: ignore
+    # Context.MODEL_TO_TABLE[model]
+
+def trace_caller():
+    try:
+        raise Exception
+    except Exception:
+        import sys
+        frame = sys.exc_info()[2].tb_frame.f_back.f_back # pyright: ignore
+        print(" >> invoked by:", frame.f_code.co_name) # pyright: ignore
 
 
 def register_model(sql_table_name: str, model: type):
@@ -200,7 +212,8 @@ def register_model(sql_table_name: str, model: type):
         )
 
     Context.TABLE_TO_MODEL[sql_table_name] = model
-    Context.MODEL_TO_TABLE[model] = sql_table_name
+    model.sql_table_name = sql_table_name # pyright: ignore
+    # Context.MODEL_TO_TABLE[model] = sql_table_name
 
 
 def register_adapter(adapter: Adapter[Any]):
