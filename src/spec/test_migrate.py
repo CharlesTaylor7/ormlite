@@ -8,7 +8,7 @@ from ormlite.orm import model, field
 from ormlite.migrate import run
 
 
-def test_migrate_new_model():
+def test_migrate():
     # Arrange
     @model("persons")
     class Person:

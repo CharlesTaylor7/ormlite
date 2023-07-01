@@ -1,1 +1,1 @@
-python3 -m pytest --cov=ormlite spec
+python3 -m pytest --cov=src/ormlite src/spec
