@@ -40,18 +40,28 @@ class DatabaseConnection(Protocol):
     def execute(self, statement: str, **kwargs: Any) -> sqlite3.Cursor:
         ...  # pragma: no cover
 
+class Context:
+    ADAPTERS: list[Adapter] = []
+    PYTHON_TO_SQL_MAPPING: dict[type, str] = dict()
 
-def python_to_sql_mapping() -> dict[type, str]:
-    initial = {
-        bytes: "BLOB",
-        str: "TEXT",
-        int: "INTEGER",
-        float: "REAL",
-    }
-    for adapter in adapters():
-        initial[adapter.python_type] = adapter.sql_type
+    MODEL_TO_TABLE: dict[type, str] = dict()
+    TABLE_TO_MODEL: dict[str, type] = dict()
 
-PYTHON_TO_SQL_MAPPING: dict[type, str] = python_to_sql_mapping()
+    @classmethod
+    def setup(cls):
+        cls.PYTHON_TO_SQL_MAPPING = cls.python_to_sql_mapping()
+
+    @classmethod
+    def python_to_sql_mapping(cls) -> dict[type, str]:
+        mapping = {
+            bytes: "BLOB",
+            str: "TEXT",
+            int: "INTEGER",
+            float: "REAL",
+        }
+        for adapter in adapters():
+            mapping[adapter.python_type] = adapter.sql_type
+        return mapping
 
 @dataclass_transform()
 def model(sql_table_name: str):
@@ -141,16 +151,11 @@ def to_sql_literal(value: Any) -> str:
 
 def to_sql_type(field: type) -> str:
     python_type = get_optional_type_arg(field) or field
-    sql_type = default_type_mappings.get(python_type)
+    sql_type = Context.PYTHON_TO_SQL_MAPPING.get(python_type)
 
     if sql_type is not None:
         return sql_type
 
-    for adapter in adapters():
-        if adapter.python_type == python_type:
-            return adapter.sql_type
-
-    logger.info(f"python_type: {python_type}")
     raise MissingAdapterError
 
 def column_def(field: dc.Field) -> str:
@@ -176,34 +181,29 @@ def column_def(field: dc.Field) -> str:
     return f"{field.name} {to_sql_type(field.type)} {constraint}".strip()
 
 
-MODEL_TO_TABLE: dict[type, str] = dict()
-TABLE_TO_MODEL: dict[str, type] = dict()
-ADAPTERS: list[Adapter] = []
-
-
 def models() -> dict[str, type]:
-    return TABLE_TO_MODEL
+    return Context.TABLE_TO_MODEL
 
 
 def adapters() -> Iterable[Adapter]:
-    return ADAPTERS
+    return Context.ADAPTERS
 
 
 def sql_table_name(model: type) -> str:
-    return MODEL_TO_TABLE[model]
+    return Context.MODEL_TO_TABLE[model]
 
 
 def register_model(sql_table_name: str, model: type):
-    if sql_table_name in MODEL_TO_TABLE:
+    if sql_table_name in Context.MODEL_TO_TABLE:
         logger.warning(
             f"Reregistering the sql table '{sql_table_name}' with {model}"
         )
 
-    TABLE_TO_MODEL[sql_table_name] = model
-    MODEL_TO_TABLE[model] = sql_table_name
+    Context.TABLE_TO_MODEL[sql_table_name] = model
+    Context.MODEL_TO_TABLE[model] = sql_table_name
 
 
 def register_adapter(adapter: Adapter[Any]):
-    ADAPTERS.append(adapter)
+    Context.ADAPTERS.append(adapter)
     sqlite3.register_adapter(adapter.python_type, adapter.adapt)
     sqlite3.register_converter(adapter.sql_type, adapter.convert)

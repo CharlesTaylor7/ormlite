@@ -1,5 +1,5 @@
 from ormlite.query import select, upsert
-from ormlite.orm import model, field, to_sql_literal
+from ormlite.orm import model, field, to_sql_literal, Context
 from ormlite.migrate import run as migrate
 from ormlite import adapters
 
@@ -15,3 +15,4 @@ __all__ = (
 )
 
 adapters.register()
+Context.setup()
