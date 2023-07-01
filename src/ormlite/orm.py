@@ -41,6 +41,18 @@ class DatabaseConnection(Protocol):
         ...  # pragma: no cover
 
 
+def python_to_sql_mapping() -> dict[type, str]:
+    initial = {
+        bytes: "BLOB",
+        str: "TEXT",
+        int: "INTEGER",
+        float: "REAL",
+    }
+    for adapter in adapters():
+        initial[adapter.python_type] = adapter.sql_type
+
+PYTHON_TO_SQL_MAPPING: dict[type, str] = python_to_sql_mapping()
+
 @dataclass_transform()
 def model(sql_table_name: str):
     if isinstance(sql_table_name, type):
@@ -99,14 +111,6 @@ def get(seq: Sequence[T], index: int) -> Optional[T]:
     else:
         return seq[index]
 
-
-# TODO: can we query this info from SQLite's list of converters & adapters?
-default_type_mappings = {
-    str: "TEXT",
-    int: "INTEGER",
-    bytes: "BYTES",
-    float: "REAL",
-}
 
 
 def to_sql_literal(value: Any) -> str:
