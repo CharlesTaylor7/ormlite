@@ -22,6 +22,8 @@ def test_select_tables():
         id: int = field(pk=True)
         name: str
 
+    from ormlite.orm import Context
+    print(Context)
     db = sqlite3.connect(
         ":memory:",
         isolation_level=None,
