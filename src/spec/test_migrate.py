@@ -64,7 +64,12 @@ def test_migrate_lifecycle():
     run(db)
 
     # Assert
-    assert fetch_table_defs(db) == []
+    assert fetch_table_defs(db) == [
+        (
+            "persons",
+            'CREATE TABLE "persons" (age INTEGER NOT NULL, name TEXT NOT NULL, address TEXT, phone INTEGER, subscribed_at TIMESTAMP, funny BOOL NOT NULL)',
+        )
+    ]
 
     # Arrange: remove columns from persons table
     @model("persons")
@@ -91,9 +96,4 @@ def test_migrate_lifecycle():
     run(db)
 
     # Assert
-    assert fetch_table_defs(db) == [
-        (
-            "persons",
-            'CREATE TABLE "persons" (age INTEGER NOT NULL, name TEXT NOT NULL, address TEXT, phone INTEGER, subscribed_at TIMESTAMP, funny BOOL NOT NULL)',
-        )
-    ]
+    assert fetch_table_defs(db) == []

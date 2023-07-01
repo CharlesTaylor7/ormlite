@@ -53,9 +53,6 @@ def run(db: DatabaseConnection):
         new_fields = field_names - column_names
         new_fields = sorted(new_fields, key=lambda x: index_of(fields, x))
 
-        print("column_names", column_names)
-        print("field_names", field_names)
-        print("new_fields", new_fields)
         for field_name in new_fields:
             column = column_def(fields_dict[field_name])
             logger.info(f"Add column for {table_name}: {column}")
