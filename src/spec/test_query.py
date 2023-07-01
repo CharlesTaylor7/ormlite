@@ -24,9 +24,6 @@ def test_select_tables():
     class Color:
         id: int = field(pk=True)
         name: str
-    print(Table, hash(Table), Table.sql_table_name, "after def")
-    print(Color, hash(Color), Color.sql_table_name, "after def")
-    return
 
     db = sqlite3.connect(
         ":memory:",

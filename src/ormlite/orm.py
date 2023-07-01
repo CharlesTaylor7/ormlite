@@ -74,7 +74,8 @@ def model(sql_table_name: str):
         # always a dataclass
         model = dc.dataclass(cls, slots=True)  # pyright: ignore
         validate_model(model)
-        register_model(sql_table_name, model)
+        register_model(sql_table_name, cls)
+
         return cls
 
     return wrap
@@ -191,20 +192,7 @@ def adapters() -> Iterable[Adapter]:
 
 
 def sql_table_name(model: type) -> str:
-    print(model, hash(model), "sql_table_name")
-    trace_caller()
-    return model.sql_table_name # pyright: ignore
-    # Context.MODEL_TO_TABLE[model]
-
-def trace_caller():
-    try:
-        raise Exception
-    except Exception:
-        import sys
-        frame = sys.exc_info()[2].tb_frame.f_back.f_back # pyright: ignore
-        print(" >> invoked by:", frame.f_code.co_name) # pyright: ignore
-
-
+    return Context.MODEL_TO_TABLE[model]
 def register_model(sql_table_name: str, model: type):
     if sql_table_name in Context.MODEL_TO_TABLE:
         logger.warning(

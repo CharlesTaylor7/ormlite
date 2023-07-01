@@ -120,7 +120,6 @@ def upsert(db: DbConnection, records: list[Model], *, update: list[str]): # pyri
     if len(records) == 0:
         return
     model = type(records[0])
-    print(model, hash(model), "upsert")
     table = orm.sql_table_name(model)
     columns = [field.name for field in dc.fields(model)]
     to_sql = lambda row: to_sql_literal([getattr(row, col) for col in columns])
