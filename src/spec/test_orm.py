@@ -1,6 +1,7 @@
 import pytest
 import dataclasses as dc
 import sqlite3
+from datetime import date
 from typing import Union
 
 from ormlite import model, field, migrate
@@ -78,3 +79,6 @@ def test_to_sql_literal__none():
 
 def test_to_sql_literal__float():
     assert to_sql_literal(3.14) == "3.14"
+
+def test_to_sql_literal__date():
+    assert to_sql_literal(date(2020, 3, 16)) == "2020-03-16"
