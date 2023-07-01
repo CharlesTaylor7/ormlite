@@ -12,6 +12,6 @@ include = ["src/ormlite/"]
 reportUnusedImport = "information"
 reportUnusedVariable = "information"
 reportPrivateUsage = "error"
-reportMissingTypeStubs = "warning"
+# reportMissingTypeStubs = "warning"
 reportMissingParameterType = "error"
 reportSelfClsParameterName = "error"

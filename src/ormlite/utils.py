@@ -1,5 +1,4 @@
 import typing
-from pathlib import Path
 
 
 T = typing.TypeVar("T")
@@ -22,13 +21,6 @@ def get_optional_type_arg(ty: type) -> typing.Optional[type]:
         return arg
     else:
         return None
-
-
-def cast(obj: typing.Any, ty: type[T]) -> T:
-    if not isinstance(obj, ty):
-        raise TypeError
-
-    return obj  # pyright: ignore
 
 
 def not_null(obj: typing.Optional[T]) -> T:

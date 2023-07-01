@@ -1,11 +1,9 @@
-import typing
 import logging
 import dataclasses as dc
 import sqlite3
 from collections.abc import Sequence
 from typing import (
     dataclass_transform,
-    final,
     Any,
     Optional,
     Iterable,
@@ -16,7 +14,7 @@ from typing import (
 )
 from datetime import datetime, date
 
-from ormlite.utils import cast, get_optional_type_arg
+from ormlite.utils import not_null, get_optional_type_arg
 
 logger = logging.getLogger(__name__)
 
@@ -71,15 +69,13 @@ class ForeignKey:
 
 def field(*, pk: bool = False, fk: Optional[str] = None, **kwargs: Any):
     foreign_key: Optional[ForeignKey] = None
-    print(pk, fk)
     if fk:
         parts = fk.split(".")
         if len(parts) > 2:
             raise Exception("invalid fk")
         table = parts[0]
         key = get(parts, 1)
-        foreign_key = ForeignKey(table=cast(table, str), key=key)
-        print(foreign_key)
+        foreign_key = ForeignKey(table=not_null(table), key=key)
 
     return dc.field(
         **kwargs,
