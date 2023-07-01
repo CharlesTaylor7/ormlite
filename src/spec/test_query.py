@@ -19,12 +19,14 @@ def test_select_tables():
         color_id: int = field(fk="colors.id")
         purchased_at: date = date.today()
 
-    print(Table, hash(Table), Table.sql_table_name, "after def")
 
     @model("colors")
     class Color:
         id: int = field(pk=True)
         name: str
+    print(Table, hash(Table), Table.sql_table_name, "after def")
+    print(Color, hash(Color), Color.sql_table_name, "after def")
+    return
 
     db = sqlite3.connect(
         ":memory:",
