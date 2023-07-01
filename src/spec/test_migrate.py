@@ -95,3 +95,5 @@ def test_migrate_lifecycle():
 
     # Assert
     assert fetch_table_defs(db) == []
+
+    db.close()

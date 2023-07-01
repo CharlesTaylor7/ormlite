@@ -1,10 +1,12 @@
 import pytest
 import dataclasses as dc
+import sqlite3
 
-from ormlite import model, field
+from ormlite import model, field, migrate
 from ormlite.orm import ForeignKey
 from .utils import unregister_all_models
 
+# TODO introduce exception subtypes
 
 def test_bare_model_decorator_is_not_supported():
     with pytest.raises(Exception):
@@ -12,6 +14,17 @@ def test_bare_model_decorator_is_not_supported():
         @model
         class Foo:
             pass
+
+def test_field_union_not_supported():
+    @model('foos')
+    class Foo:
+        bar: str | int | float
+
+    db = sqlite3.connect(":memory:", isolation_level=None)
+    with pytest.raises(Exception):
+        migrate(db)
+
+    db.close()
 
 
 def test_foreign_key_punning():
