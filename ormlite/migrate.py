@@ -24,7 +24,6 @@ def run(db: DatabaseConnection):
     print("here")
 
     db.execute("""BEGIN EXCLUSIVE TRANSACTION""")
-    print("here")
     cursor = db.execute(
         """
         SELECT tbl_name, sql
@@ -34,9 +33,8 @@ def run(db: DatabaseConnection):
     ).fetchall()
     sql_table_defs = {row[0]: row[1] for row in cursor}
 
-    print(sql_table_defs)
-
     # create new tables
+    print(orm.models())
     for table_name, model in orm.models().items():
         if table_name not in sql_table_defs:
             create_table(db, model)
@@ -106,8 +104,7 @@ def create_table(db: DatabaseConnection, model: type):
         CREATE TABLE "{name}" (
             {",".join([*defs, *fk_constraints(model), *sql_constraints])}
         ) {without_row_id}
-        """,
-        name=orm.sql_table_name(model),
+        """
     )
     logger.info(f"Table created: {name}")
 

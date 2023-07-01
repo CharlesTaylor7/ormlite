@@ -47,6 +47,9 @@ class DatabaseConnection(Protocol):
 
 @dataclass_transform()
 def model(sql_table_name: str):
+    if isinstance(sql_table_name, type):
+        raise TypeError("@model(sql_table_name) must be called with the sql table name")
+
     def wrap(cls: type):
         logger.debug(f"applying @model({sql_table_name}) to {cls})")
         # always a dataclass
@@ -55,9 +58,6 @@ def model(sql_table_name: str):
         return cls
 
     return wrap
-
-
-# cls.sql_constraints = getattr(cls, 'sql_constraints', [])
 
 
 @dc.dataclass
@@ -150,12 +150,12 @@ def column_def(field: dc.Field) -> str:
     elif field.default is None or optional_inner_type is not None:
         constraint = ""
 
-    elif field.default != dc.MISSING:
-        constraint = f"DEFAULT {to_sql_literal(field.default)} NOT NULL"
-
     # nullable, since we can't convert a python factory into a sql factory
     elif field.default_factory != dc.MISSING:
         constraint = ""
+
+    elif field.default != dc.MISSING:
+        constraint = f"DEFAULT {to_sql_literal(field.default)} NOT NULL"
 
     field_type = optional_inner_type or field.type
     return f"{field.name} {default_type_mappings[field_type]} {constraint}"

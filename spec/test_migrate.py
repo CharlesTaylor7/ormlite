@@ -4,30 +4,27 @@ from typing import Optional
 from unittest import mock
 from datetime import datetime
 
-from ormlite.orm import model
+from ormlite.orm import model, field
 from ormlite.migrate import run
 
 
 def test_migrate_new_model():
     # Arrange
-    @model
+    @model("persons")
     class Person:
         age: int
         name: str
         funny: bool
         address: Optional[str] = ''
         phone: Optional[int] = None
-        subscribed_at: datetime = datetime.now()
+        subscribed_at: datetime = field(default_factory=datetime.now)
 
     db = sqlite3.connect(":memory:", isolation_level=None)
-    # db = mock.Mock(wraps=db)
 
     # Act
     run(db)
 
     # Assert
-    print(db.call_args_list)
-
     rows = db.execute(
         """
         SELECT tbl_name, sql
@@ -35,4 +32,4 @@ def test_migrate_new_model():
         WHERE type = 'table'
     """).fetchall()
 
-    assert rows == None
+    assert rows == [('persons', 'CREATE TABLE "persons" (\n            age INTEGER NOT NULL,name TEXT NOT NULL,funny BOOL NOT NULL,address TEXT ,phone INTEGER ,subscribed_at TIMESTAMP \n        )')]
