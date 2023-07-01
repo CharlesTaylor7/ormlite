@@ -8,8 +8,8 @@ from ormlite.orm import model, field
 from ormlite.migrate import run
 
 
-def test_migrate():
-    # Arrange
+def test_migrate_lifecycle():
+    # Arrange: persons table
     @model("persons")
     class Person:
         age: int
@@ -33,3 +33,24 @@ def test_migrate():
     """).fetchall()
 
     assert rows == [('persons', 'CREATE TABLE "persons" (\n            age INTEGER NOT NULL,name TEXT NOT NULL,funny BOOL NOT NULL,address TEXT ,phone INTEGER ,subscribed_at TIMESTAMP \n        )')]
+
+
+    # Arrange: modify persons table
+    @model("persons")
+    class Person:
+        age: int
+        name: str
+        address: Optional[str] = ''
+
+    # Act
+    run(db)
+
+    # Assert
+    rows = db.execute(
+        """
+        SELECT tbl_name, sql
+        FROM sqlite_schema
+        WHERE type = 'table'
+    """).fetchall()
+
+    assert rows == [('persons', 'CREATE TABLE "persons" (\n            age INTEGER NOT NULL,name TEXT NOT NULL,address TEXT )')]
