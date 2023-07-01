@@ -15,6 +15,13 @@ def fetch_table_defs(db):
         WHERE type = 'table'
     """).fetchall()
 
+def unregister_all_models():
+    """
+    For testing only
+    """
+    from ormlite import orm
+    orm.MODEL_TO_TABLE = dict()
+    orm.TABLE_TO_MODEL = dict()
 
 def test_migrate_lifecycle():
     # Arrange: persons table
@@ -51,7 +58,7 @@ def test_migrate_lifecycle():
     assert fetch_table_defs(db) == [('persons', 'CREATE TABLE "persons" (age INTEGER NOT NULL, name TEXT NOT NULL, address TEXT)')]
 
     # Arrange: delete models
-    _unregister_all_models()
+    unregister_all_models()
 
     # Act
     run(db)
