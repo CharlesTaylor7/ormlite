@@ -22,7 +22,11 @@ def test_select_tables():
         id: int = field(pk=True)
         name: str
 
-    db = sqlite3.connect(":memory:", isolation_level=None)
+    db = sqlite3.connect(
+        ":memory:",
+        isolation_level=None,
+        detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES,
+    )
     migrate(db)
     upsert(
         db,
