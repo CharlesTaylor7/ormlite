@@ -32,7 +32,7 @@ def test_migrate_lifecycle():
         WHERE type = 'table'
     """).fetchall()
 
-    assert rows == [('persons', 'CREATE TABLE "persons" (age INTEGER NOT NULL,name TEXT NOT NULL,funny BOOL NOT NULL,address TEXT ,phone INTEGER ,subscribed_at TIMESTAMP )')]
+    assert rows == [('persons', 'CREATE TABLE "persons" (age INTEGER NOT NULL, name TEXT NOT NULL, funny BOOL NOT NULL, address TEXT, phone INTEGER, subscribed_at TIMESTAMP)')]
 
     # Arrange: modify persons table
     @model("persons")
@@ -52,4 +52,4 @@ def test_migrate_lifecycle():
         WHERE type = 'table'
     """).fetchall()
 
-    assert rows == [('persons', 'CREATE TABLE "persons" (age INTEGER NOT NULL,name TEXT NOT NULL,address TEXT )')]
+    assert rows == [('persons', 'CREATE TABLE "persons" (age INTEGER NOT NULL, name TEXT NOT NULL, address TEXT)')]

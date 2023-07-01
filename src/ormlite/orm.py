@@ -158,7 +158,7 @@ def column_def(field: dc.Field) -> str:
         constraint = f"DEFAULT {to_sql_literal(field.default)} NOT NULL"
 
     field_type = optional_inner_type or field.type
-    return f"{field.name} {default_type_mappings[field_type]} {constraint}"
+    return f"{field.name} {default_type_mappings[field_type]} {constraint}".strip()
 
 
 MODEL_TO_TABLE: dict[type, str] = dict()

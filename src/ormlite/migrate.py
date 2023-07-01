@@ -101,7 +101,7 @@ def create_table(db: DatabaseConnection, model: type):
 
     db.execute(
         f"""
-        CREATE TABLE "{name}" ({",".join([*defs, *fk_constraints(model), *sql_constraints])}) {without_row_id}
+        CREATE TABLE "{name}" ({", ".join([*defs, *fk_constraints(model), *sql_constraints])}) {without_row_id}
         """
     )
     logger.info(f"Table created: {name}")
