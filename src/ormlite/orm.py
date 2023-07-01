@@ -77,7 +77,6 @@ def model(sql_table_name: str):
         else:
             logger.debug(f"applying @model({sql_table_name}) to {model})")
 
-        # always a dataclass
         model = dc.dataclass(model, slots=True)  # pyright: ignore
         validate_model(model)
 

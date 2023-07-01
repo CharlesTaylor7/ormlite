@@ -1,6 +1,7 @@
 import pytest
 import dataclasses as dc
 import sqlite3
+from typing import Union
 
 from ormlite import model, field, migrate
 from ormlite.errors import MissingAdapterError
@@ -15,12 +16,21 @@ def test_bare_model_decorator_is_not_supported():
             pass
 
 
-def test_field_union_not_supported():
+def test_field_unions_not_supported():
     with pytest.raises(MissingAdapterError):
-        @model('foos')
+        @model('union_operator')
         class Foo:
-            bar: str | int | float
+            bar: str | int
 
+    with pytest.raises(MissingAdapterError):
+        @model('double_union')
+        class Foo:
+            bar: Union[str, int]
+
+    with pytest.raises(MissingAdapterError):
+        @model('triple_union')
+        class Foo:
+            bar: Union[str, int, float]
 
 def test_foreign_key_punning():
     @model("foos")
