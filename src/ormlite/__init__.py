@@ -4,9 +4,9 @@ from ormlite.migrate import run as migrate
 from ormlite import adapters
 
 __all__ = (
-    'select',
-    'migrate',
-    'to_sql_literal',
+    "select",
+    "migrate",
+    "to_sql_literal",
 )
 
 adapters.register()

@@ -36,9 +36,7 @@ class SelectQuery(Generic[Model]):
     # allow multiple calls to join
     def join(self, table: str) -> Self:
         field = next(
-            field
-            for field in dc.fields(self.model)
-            if get_fk_table(field) == table
+            field for field in dc.fields(self.model) if get_fk_table(field) == table
         )
         self.join_clause = _prepare_join(
             source_table=orm.sql_table_name(self.model),
@@ -47,7 +45,6 @@ class SelectQuery(Generic[Model]):
             target_key=field.metadata["fk"].key or field.name,
         )
         return self
-
 
     def extra(self, *fields: str) -> Self:
         self.extra_columns = list(fields)
@@ -89,10 +86,7 @@ class SelectQuery(Generic[Model]):
 
     def models(self, db: DbConnection) -> Iterable[Model]:
         cursor = self._execute(db)
-        return (
-            self._to_model(row)
-            for row in cursor
-        )
+        return (self._to_model(row) for row in cursor)
 
     def rows(self, db: DbConnection) -> Iterable[Row[Model]]:
         cursor = self._execute(db)
@@ -109,7 +103,7 @@ class SelectQuery(Generic[Model]):
 
     def _to_extra(self, row: tuple):
         extra = {}
-        rest = row[self.model_field_count:]
+        rest = row[self.model_field_count :]
         for name, value in zip(self.extra_columns, rest):
             extra[name] = value
         return extra
@@ -145,6 +139,7 @@ def get_fk_table(field: dc.Field) -> Optional[str]:
     if not fk:
         return None
     return fk.table
+
 
 def _prepare_join(
     *,

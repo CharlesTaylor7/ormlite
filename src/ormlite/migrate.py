@@ -69,7 +69,6 @@ def run(db: DatabaseConnection):
     db.execute("""END TRANSACTION""")
 
 
-
 REGEX = re.compile(r'CREATE TABLE "?(?P<table_name>\w+)"?\s*\((?P<defs>[\s\w,\'\(\)]*)')
 IDENT = re.compile(r"[a-z]\w*")
 

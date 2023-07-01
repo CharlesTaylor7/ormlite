@@ -22,9 +22,11 @@ logger = logging.getLogger(__name__)
 
 T = TypeVar("T")
 
+
 def tap(val: T) -> T:
     print(val)
     return val
+
 
 class Adapter(Generic[T]):
     sql_name: ClassVar[str]
@@ -89,6 +91,7 @@ def field(*, pk: bool = False, fk: Optional[str] = None, **kwargs: Any):
             "fk": foreign_key,
         },
     )
+
 
 def get(seq: Sequence[T], index: int) -> Optional[T]:
     if index >= len(seq):
@@ -173,6 +176,7 @@ def models() -> dict[str, type]:
 def adapters() -> Iterable[Adapter]:
     return ADAPTERS
 
+
 def sql_table_name(model: type) -> str:
     return MODEL_TO_TABLE[model]
 
@@ -184,6 +188,7 @@ def _register_model(sql_table_name: str, model: type):
         )
     TABLE_TO_MODEL[sql_table_name] = model
     MODEL_TO_TABLE[model] = sql_table_name
+
 
 def register_adapter(adapter: Adapter[Any]):
     ADAPTERS.append(adapter)

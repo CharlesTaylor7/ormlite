@@ -4,6 +4,7 @@ from pathlib import Path
 
 T = typing.TypeVar("T")
 
+
 def get_optional_type_arg(ty: type) -> typing.Optional[type]:
     """
     Gets the inner type of an optional
@@ -28,6 +29,7 @@ def cast(obj: typing.Any, ty: type[T]) -> T:
         raise TypeError
 
     return obj  # pyright: ignore
+
 
 def not_null(obj: typing.Optional[T]) -> T:
     if obj is None:
