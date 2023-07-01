@@ -41,7 +41,7 @@ class DatabaseConnection(Protocol):
         ...  # pragma: no cover
 
 class Context:
-    ADAPTERS: list[Adapter] = []
+    ADAPTERS: dict[type, Adapter] = dict()
     PYTHON_TO_SQL_MAPPING: dict[type, str] = dict()
 
     MODEL_TO_TABLE: dict[type, str] = dict()
@@ -59,7 +59,7 @@ class Context:
             int: "INTEGER",
             float: "REAL",
         }
-        for adapter in adapters():
+        for adapter in cls.ADAPTERS.values():
             mapping[adapter.python_type] = adapter.sql_type
         return mapping
 
@@ -132,7 +132,6 @@ def get(seq: Sequence[T], index: int) -> Optional[T]:
         return seq[index]
 
 
-
 def to_sql_literal(value: Any) -> str:
     if value is None:
         return "NULL"
@@ -151,11 +150,11 @@ def to_sql_literal(value: Any) -> str:
     if isinstance(value, (list, tuple)):
         return f"({','.join(to_sql_literal(item) for item in value)})"
 
-    for adapter in adapters():
-        if isinstance(value, adapter.python_type):
-            # TODO: sqlite escape text contents
-            # ASSUMPTION: custom adapters always encode to text
-            return f"'{adapter.adapt(value)}'"
+    adapter = Context.ADAPTERS.get(type(value))
+    if adapter:
+        # TODO: sqlite escape text contents
+        # ASSUMPTION: custom adapters always encode to text
+        return f"'{adapter.adapt(value)}'"
 
     raise MissingAdapterError
 
@@ -195,14 +194,10 @@ def models() -> dict[str, type]:
     return Context.TABLE_TO_MODEL
 
 
-def adapters() -> Iterable[Adapter]:
-    return Context.ADAPTERS
-
-
 def sql_table_name(model: type) -> str:
     return Context.MODEL_TO_TABLE[model]
 
 def register_adapter(adapter: Adapter[Any]):
-    Context.ADAPTERS.append(adapter)
+    Context.ADAPTERS[adapter.python_type] = adapter
     sqlite3.register_adapter(adapter.python_type, adapter.adapt)
     sqlite3.register_converter(adapter.sql_type, adapter.convert)
