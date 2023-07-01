@@ -66,9 +66,15 @@ def test_foreign_key_invalid():
         class Foo:
             fk: field(fk="three.part.fk")
 
-def test_to_sql_literal_missing_adapter():
+def test_to_sql_literal__missing_adapter():
     class Foo:
         pass
 
     with pytest.raises(MissingAdapterError):
         to_sql_literal(Foo())
+
+def test_to_sql_literal__none():
+    assert to_sql_literal(None) == "NULL"
+
+def test_to_sql_literal__float():
+    assert to_sql_literal(3.14) == "3.14"

@@ -48,15 +48,15 @@ def test_migrate_lifecycle():
         )
     ]
 
-    # Arrange: add columns for persons table
+    # Arrange: add & remove columns for persons table
     @model("persons")
     class Person:
         age: int
         name: str
         funny: bool
+        height: float
         address: Optional[str] = ""
         phone: Optional[int] = None
-        subscribed_at: datetime = field(default_factory=datetime.now)
 
     # Act
     migrate(db)
@@ -65,25 +65,7 @@ def test_migrate_lifecycle():
     assert fetch_table_defs(db) == [
         (
             "persons",
-            'CREATE TABLE "persons" (age INTEGER NOT NULL, name TEXT NOT NULL, address TEXT, phone INTEGER, subscribed_at TIMESTAMP, funny BOOL NOT NULL)',
-        )
-    ]
-
-    # Arrange: remove columns from persons table
-    @model("persons")
-    class Person:
-        age: int
-        name: str
-        address: Optional[str] = ""
-
-    # Act
-    migrate(db)
-
-    # Assert
-    assert fetch_table_defs(db) == [
-        (
-            "persons",
-            'CREATE TABLE "persons" (age INTEGER NOT NULL, name TEXT NOT NULL, address TEXT)',
+            'CREATE TABLE "persons" (age INTEGER NOT NULL, name TEXT NOT NULL, address TEXT, phone INTEGER, funny BOOL NOT NULL, height REAL NOT NULL)',
         )
     ]
 
