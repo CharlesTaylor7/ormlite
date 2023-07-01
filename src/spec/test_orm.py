@@ -4,8 +4,8 @@ import sqlite3
 from typing import Union
 
 from ormlite import model, field, migrate
-from ormlite.errors import MissingAdapterError
-from ormlite.orm import ForeignKey
+from ormlite.errors import MissingAdapterError, InvalidForeignKeyError
+from ormlite.orm import ForeignKey, to_sql_literal
 from .utils import unregister_all_models
 
 
@@ -61,8 +61,14 @@ def test_foreign_key_qualified():
 
 
 def test_foreign_key_invalid():
-    with pytest.raises(Exception):
-
+    with pytest.raises(InvalidForeignKeyError):
         @model("foos")
         class Foo:
             fk: field(fk="three.part.fk")
+
+def test_to_sql_literal_missing_adapter():
+    class Foo:
+        pass
+
+    with pytest.raises(MissingAdapterError):
+        to_sql_literal(Foo())
