@@ -1,10 +1,11 @@
 import sqlite3
+import pytest
 from typing import Optional
 from unittest import mock
 from datetime import datetime
 
 from ormlite.orm import model, field
-from ormlite.migrate import run
+from ormlite.migrate import run, parse_column_names
 
 
 def fetch_table_defs(db):
@@ -25,6 +26,10 @@ def unregister_all_models():
 
     orm.MODEL_TO_TABLE = dict()
     orm.TABLE_TO_MODEL = dict()
+
+def test_parse_column_names_failed_regex():
+    with pytest.raises(Exception, match="regex failed to parse"):
+        parse_column_names("Crit TABlE")
 
 
 def test_migrate_lifecycle():

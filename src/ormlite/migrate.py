@@ -46,7 +46,7 @@ def run(db: DatabaseConnection):
         fields = dc.fields(orm.models()[table_name])
 
         field_names = {field.name for field in fields}
-        column_names = get_column_names(sql)
+        column_names = parse_column_names(sql)
 
         fields_dict = {field.name: field for field in fields}
 
@@ -70,11 +70,11 @@ REGEX = re.compile(r'CREATE TABLE "?(?P<table_name>\w+)"?\s*\((?P<defs>[\s\w,\'\
 IDENT = re.compile(r"[a-z]\w*")
 
 
-def get_column_names(raw_table_sql: str) -> set[str]:
+def parse_column_names(raw_table_sql: str) -> set[str]:
     match = REGEX.match(raw_table_sql)
     if match is None:
-        logger.warning(f"failed regex: {raw_table_sql}")
-        raise Exception
+        raise Exception(f"regex failed to parse: {raw_table_sql}")
+
     defs = match.group("defs").strip().split(",")
     get_name = lambda row: re.split(r"\s+", row.strip())[0]
     col_names = {
