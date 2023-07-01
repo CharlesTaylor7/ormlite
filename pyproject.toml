@@ -1,5 +1,8 @@
 [project]
-optional-dependencies = ["pytest", "black"]
+name = "ormlite"
+version = "0.0.1"
+[project.optional-dependencies] 
+dev = [ "black", "pytest", "pytest-cov" ]
 
 [tool.pyright]
 include = ["ormlite/"]

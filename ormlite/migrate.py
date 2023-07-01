@@ -21,8 +21,10 @@ logger = logging.getLogger(__name__)
 # changing constraints, is a tricky multi step process:
 # https://sqlite.org/lang_altertable.html#making_other_kinds_of_table_schema_changes
 def run(db: DatabaseConnection):
-    db.execute("""BEGIN EXCLUSIVE TRANSACTION""")
+    print("here")
 
+    db.execute("""BEGIN EXCLUSIVE TRANSACTION""")
+    print("here")
     cursor = db.execute(
         """
         SELECT tbl_name, sql
@@ -30,8 +32,9 @@ def run(db: DatabaseConnection):
         WHERE type = 'table'
     """
     ).fetchall()
-
     sql_table_defs = {row[0]: row[1] for row in cursor}
+
+    print(sql_table_defs)
 
     # create new tables
     for table_name, model in orm.models().items():
