@@ -124,12 +124,19 @@ def upsert(db: DbConnection, records: list[Model], *, update: list[str]):
     table = orm.sql_table_name(model)
     columns = [field.name for field in dc.fields(model)]
     to_sql = lambda row: to_sql_literal([getattr(row, col) for col in columns])
+
+    on_conflict_clause = ""
+    if len(update) > 0:
+        on_conflict_clause = f"""
+            ON CONFLICT DO UPDATE
+            SET {','.join(f'{col}=excluded.{col}' for col in update)}
+        """
+
     db.execute(
         f"""
         INSERT INTO {table}({','.join(columns)})
         VALUES {','.join(to_sql(row) for row in records)}
-        ON CONFLICT DO UPDATE
-        SET {','.join(f'{col}=excluded.{col}' for col in update)}
+        {on_conflict_clause}
         """
     )
 

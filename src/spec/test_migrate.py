@@ -4,8 +4,10 @@ from typing import Optional
 from unittest import mock
 from datetime import datetime
 
-from ormlite.orm import model, field
-from ormlite.migrate import run, parse_column_names
+from ormlite import model, field, migrate
+from ormlite.migrate import parse_column_names
+
+from .utils import unregister_all_models
 
 
 def fetch_table_defs(db):
@@ -17,15 +19,6 @@ def fetch_table_defs(db):
     """
     ).fetchall()
 
-
-def unregister_all_models():
-    """
-    For testing only
-    """
-    from ormlite import orm
-
-    orm.MODEL_TO_TABLE = dict()
-    orm.TABLE_TO_MODEL = dict()
 
 def test_parse_column_names_failed_regex():
     with pytest.raises(Exception, match="regex failed to parse"):
@@ -45,7 +38,7 @@ def test_migrate_lifecycle():
     db = sqlite3.connect(":memory:", isolation_level=None)
 
     # Act
-    run(db)
+    migrate(db)
 
     # Assert
     assert fetch_table_defs(db) == [
@@ -66,7 +59,7 @@ def test_migrate_lifecycle():
         subscribed_at: datetime = field(default_factory=datetime.now)
 
     # Act
-    run(db)
+    migrate(db)
 
     # Assert
     assert fetch_table_defs(db) == [
@@ -84,7 +77,7 @@ def test_migrate_lifecycle():
         address: Optional[str] = ""
 
     # Act
-    run(db)
+    migrate(db)
 
     # Assert
     assert fetch_table_defs(db) == [
@@ -98,7 +91,7 @@ def test_migrate_lifecycle():
     unregister_all_models()
 
     # Act
-    run(db)
+    migrate(db)
 
     # Assert
     assert fetch_table_defs(db) == []
