@@ -3,13 +3,15 @@ import typing
 
 T = typing.TypeVar("T")
 
+# because typing.types.UnionType is not publicly exported 
+UNION_TYPE = type(str | None)
 
 def get_optional_type_arg(ty: type) -> typing.Optional[type]:
     """
     Gets the inner type of an optional
     """
     origin = typing.get_origin(ty)
-    if origin != typing.Union and origin != typing.types.UnionType:
+    if origin != typing.Union and origin != UNION_TYPE:
         return None
 
     args = typing.get_args(ty)
