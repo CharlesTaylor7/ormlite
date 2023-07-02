@@ -49,3 +49,6 @@ db.close()
 - github actions to check commits and publish to pypi
 - Fill out README
 - document the api
+- features:
+  - optionally serialize migrations
+  - interactive migration mode where each operation is approved
