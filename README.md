@@ -56,6 +56,7 @@ db.close()
 - badges:
   - publish to pypi
   - pyright
+  - code coverage
 - features:
   - optionally serialize migrations
   - interactive migration mode where each operation is approved
