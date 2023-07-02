@@ -37,4 +37,3 @@ def test_select_tables():
 
     assert list(select(Table).models(db)) == tables
     unregister_all_models()
-

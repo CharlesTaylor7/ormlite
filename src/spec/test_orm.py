@@ -10,10 +10,6 @@ from ormlite.orm import ForeignKey, to_sql_literal
 from .utils import unregister_all_models
 
 
-def test_always_fails():
-    raise Exception
-
-
 def test_bare_model_decorator_is_not_supported():
     with pytest.raises(TypeError):
 
