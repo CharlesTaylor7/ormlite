@@ -50,7 +50,7 @@ jobs:
         with:
           python-version: ${{env.PYTHON_VERSION}}
       - run: |
-          pip wheel dist/
+          pip wheel . -w dist/
       # retrieve your distributions here
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
