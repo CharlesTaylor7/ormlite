@@ -1,3 +1,5 @@
+[![Checked with pyright](https://microsoft.github.io/pyright/img/pyright_badge.svg)](https://microsoft.github.io/pyright/)
+
 # Motivation
 I wanted to query a sqlite database, without writing verbose queries. Previously, for work, I've used django's orm for interacting with sql databases. But for a recent small personal project, I wanted a library to interact with sqlite without depending on an entire web framework.
 
