@@ -1,6 +1,8 @@
 [project]
 name = "ormlite"
 version = "0.0.1"
+readme = "README.md"
+license = { file = "LICENSE" }
 
 [project.optional-dependencies] 
 dev = [ "black", "pytest", "pytest-cov" ]
