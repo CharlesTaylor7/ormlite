@@ -1,7 +1,8 @@
 name: Validate package & publish
 on:
   push:
-    - [main]
+    branches:
+      - main
 
 jobs:
   pyright:
