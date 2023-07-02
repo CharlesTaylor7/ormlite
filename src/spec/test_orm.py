@@ -18,6 +18,17 @@ def test_bare_model_decorator_is_not_supported():
             pass
 
 
+def test_field_optional_union_supported():
+    @model("union_operator")
+    class Foo:
+        bar: str | None
+
+    field = dc.fields(Foo)[0]
+    assert field.name == 'bar'
+    assert field.type == Optional[str]
+    assert to_sql_type(field.type) == "TEXT"
+
+
 def test_field_unions_not_supported():
     with pytest.raises(MissingAdapterError):
 
