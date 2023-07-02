@@ -1,8 +1,22 @@
 [project]
 name = "ormlite"
-version = "0.0.1"
+version = "0.0.2"
 readme = "README.md"
 license = { file = "LICENSE" }
+requires-python = ">=3.11"
+keywords = ["sqlite", "orm", "dataclass", "data", "query", "migration"]
+authors = [
+  {name = "Charles Taylor", email = "charlestaylor95@gmail.com" }
+]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+]
+
+[project.urls]
+"Github Repo" = "https://github.com/CharlesTaylor7/ormlite"
+"Issue Tracker" = "https://github.com/CharlesTaylor7/ormlite/issues"
 
 [project.optional-dependencies] 
 dev = [ "black", "pytest", "pytest-cov" ]
