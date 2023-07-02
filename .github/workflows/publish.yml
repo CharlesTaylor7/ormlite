@@ -41,7 +41,7 @@ jobs:
       name: pypi
       url: https://pypi.org/p/ormlite
     permissions:
-      # IMPORTANT: this permission is mandatory for trusted publishing
+      # mandatory for trusted publishing
       id-token: write
     steps: 
       - uses: actions/checkout@v3
@@ -49,7 +49,8 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: ${{env.PYTHON_VERSION}}
-      - run: |
+      - name: Package wheel
+        run: |
           pip wheel . -w dist/
       # retrieve your distributions here
       - name: Publish to PyPI
