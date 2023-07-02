@@ -45,10 +45,6 @@ jobs:
       id-token: write
     steps: 
       - uses: actions/checkout@v3
-      - name: Install Python 
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{env.PYTHON_VERSION}}
       - name: Package wheel
         run: |
           pip wheel . -w dist/
