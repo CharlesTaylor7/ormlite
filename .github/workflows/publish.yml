@@ -16,10 +16,9 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: ${{env.PYTHON_VERSION}}
-      - name: Install pip & pytest
+      - name: Install pytest
         run: |
-          python -m pip install --upgrade pip
-          pip install pytest
+          python -m pip install pytest
       - name: Test suite
         run: pytest src/spec
 
@@ -51,7 +50,7 @@ jobs:
         with:
           python-version: ${{env.PYTHON_VERSION}}
       - run: |
-          pip wheel -o dist/
+          pip wheel dist/
       # retrieve your distributions here
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
