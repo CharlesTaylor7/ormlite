@@ -1,15 +1,12 @@
-name: publish
-run-name: ${{ github.actor }} is learning GitHub Actions
+name: Validate package & publish
 on:
   push:
     - [main]
+
 jobs:
-  check-bats-version:
+  pyright:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: jakebailey/pyright-action@v1
         with:
-          node-version: '14'
-      - run: npm install -g bats
-      - run: bats -v
+          project: ./pyproject.toml
