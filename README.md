@@ -48,14 +48,3 @@ assert list(models) == [Person(23, "5'10\"")]
 db.close()
 ```
 
-# TODO
-- 100% code coverage
-- github actions to check commits and publish to pypi
-- Fill out README
-- document the api
-- badges:
-  - publish to pypi
-  - pyright
-- features:
-  - optionally serialize migrations
-  - interactive migration mode where each operation is approved

@@ -1,0 +1,10 @@
+- 100% code coverage
+- Fill out README
+- document the api
+- badges:
+  - publish to pypi
+  - pyright
+  - pytest
+- features:
+  - optionally serialize migrations
+  - interactive migration mode where each operation is approved
