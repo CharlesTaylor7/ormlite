@@ -4,7 +4,8 @@ import typing
 T = typing.TypeVar("T")
 
 # because typing.types.UnionType is not publicly exported 
-UNION_TYPE = type(str | None)
+UNION_TYPE = typing.get_origin(str | float)
+
 
 def get_optional_type_arg(ty: type) -> typing.Optional[type]:
     """
