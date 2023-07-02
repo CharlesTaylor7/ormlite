@@ -34,4 +34,5 @@ jobs:
     needs: 
       - pytest
       - pyright
-    steps: []
+    steps: 
+      - uses: actions/checkout@v3
