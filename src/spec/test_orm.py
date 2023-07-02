@@ -2,11 +2,11 @@ import pytest
 import dataclasses as dc
 import sqlite3
 from datetime import datetime, date
-from typing import Union
+from typing import Union, Optional
 
 from ormlite import model, field, migrate
 from ormlite.errors import MissingAdapterError, InvalidForeignKeyError
-from ormlite.orm import ForeignKey, to_sql_literal
+from ormlite.orm import ForeignKey, to_sql_literal, to_sql_type
 from .utils import unregister_all_models
 
 
