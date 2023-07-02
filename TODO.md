@@ -1,8 +1,16 @@
+- Edit for README for clarity
 - 100% code coverage
-- Fill out README
-- document the api
+- Doc comments for public api methods
+- workflows:
+  - [ ] Publish to ReadTheDocs
+  - [ ] linter?
+  - [ ] formatter?
+  - [x] Publish to PyPI
+  - [x] pytest
+  - [x] pyright
 - badges:
   - publish to pypi
+  - publish to readthedocs
   - pyright
   - pytest
 - features:
