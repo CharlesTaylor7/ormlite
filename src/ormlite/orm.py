@@ -198,8 +198,7 @@ def models() -> dict[str, type]:
 
 
 def sql_table_name(model: type) -> str:
-    # return Context.MODEL_TO_TABLE[model]
-    return None
+    return Context.MODEL_TO_TABLE[model]
 
 
 def register_adapter(adapter: Adapter[Any]):
