@@ -9,7 +9,7 @@ def get_optional_type_arg(ty: type) -> typing.Optional[type]:
     Gets the inner type of an optional
     """
     origin = typing.get_origin(ty)
-    if origin != typing.Union:
+    if origin != typing.Union and origin != typing.UnionType:
         return None
 
     args = typing.get_args(ty)
