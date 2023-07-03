@@ -7,3 +7,6 @@
 .coverage
 *.whl
 build/
+
+# Sphinx
+docs/_build/
