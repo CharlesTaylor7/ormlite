@@ -17,10 +17,11 @@ release = 'alpha'
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 extensions = [
-    'myst_parser',
     'sphinx.ext.autodoc',
     'sphinx.ext.viewcode',
     'sphinx.ext.todo',
+    'myst_parser',
+    'sphinx_autodoc_typehints',
 ]
 
 templates_path = ['_templates']

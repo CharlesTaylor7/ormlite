@@ -1,0 +1,3 @@
+sphinx_rtd_theme==1.2.2
+readthedocs-sphinx-search
+sphinx-autodoc-typehints

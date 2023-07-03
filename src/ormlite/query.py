@@ -110,6 +110,11 @@ class SelectQuery(Generic[Model]):
 
 
 def select(model: type[Model]) -> SelectQuery[Model]:
+    """
+    Begin a select query.
+
+    :param model: Model class; this determines which model is when binding the sql rows into python objects
+    """
     return SelectQuery(model)
 
 
