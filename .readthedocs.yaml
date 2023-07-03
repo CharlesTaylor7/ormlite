@@ -9,6 +9,5 @@ build:
     python: "3.11"
 sphinx:
    configuration: docs/conf.py
-
-extensions = ['myst_parser']
-source_suffix = ['.md']
+extensions: ['myst_parser']
+source_suffix: ['.md']
