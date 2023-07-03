@@ -116,9 +116,12 @@ def select(model: type[Model]) -> SelectQuery[Model]:
 def upsert(
     db: DbConnection, records: list[Model], *, update: list[str]
 ):  # pyright: ignore
+    """Insert records, on conflict, update fields but only specific ones
+
+    :param records: Records to insert or update
+    :type records: list[Model]
     """
-    Insert records, on conflict, update fields but only specific ones
-    """
+    # :param update: List of fields to update in the case of a conflict
     if len(records) == 0:
         return
     model = type(records[0])
