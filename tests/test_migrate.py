@@ -65,7 +65,7 @@ def test_migrate_lifecycle():
     assert fetch_table_defs(db) == [
         (
             "persons",
-            'CREATE TABLE "persons" (age INTEGER NOT NULL, name TEXT NOT NULL, address TEXT, phone INTEGER, funny BOOL NOT NULL, height REAL NOT NULL)',
+            'CREATE TABLE "persons" (age INTEGER NOT NULL, name TEXT NOT NULL, address TEXT, phone INTEGER, funny BOOLEAN NOT NULL, height REAL NOT NULL)',
         )
     ]
 

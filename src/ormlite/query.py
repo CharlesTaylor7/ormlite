@@ -1,7 +1,9 @@
 import logging
 import dataclasses as dc
 import sqlite3
-from typing import Self, Generic, TypeVar, Iterable, Optional
+from typing import (
+    Self, Generic, TypeVar, Iterable, Optional, Any, Callable
+)
 from dataclasses import dataclass
 
 from ormlite import orm
@@ -34,13 +36,14 @@ class SelectQuery(Generic[Model]):
 
     # TODO: allow multiple joins via join dict ala ruby on rails
     # allow multiple calls to join
-    def join(self, table: str) -> Self:
+    def join(self, table: type[Any]) -> Self:
+        target_table = orm.sql_table_name(table)
         field = next(
-            field for field in dc.fields(self.model) if get_fk_table(field) == table
+            field for field in dc.fields(self.model) if get_fk_table(field) == target_table
         )
         self.join_clause = _prepare_join(
             source_table=orm.sql_table_name(self.model),
-            target_table=table,
+            target_table=target_table,
             source_key=field.name,
             target_key=field.metadata["fk"].key or field.name,
         )
@@ -50,11 +53,22 @@ class SelectQuery(Generic[Model]):
         self.extra_columns = list(fields)
         return self
 
-    def where(self, clause: str) -> Self:
-        if self.where_clause == "":
-            self.where_clause = f"WHERE {clause}"
+    def where(self, condition: Optional[str] = None, **kwargs) -> Self:
+        if condition:
+            for key, value in kwargs.items():
+                condition = condition.replace(f":{key}", to_sql_literal(value))
+            conditions = [condition]
         else:
-            self.where_clause += f" AND ({clause})"
+            table_name = orm.sql_table_name(self.model)
+            conditions = []
+            for key, value in kwargs.items():
+                conditions.append(f"{table_name}.{key} = {to_sql_literal(value)}")
+
+        for condition in conditions:
+            if self.where_clause == "":
+                self.where_clause = f"WHERE ({condition})"
+            else:
+                self.where_clause += f" AND ({condition})"
 
         return self
 
@@ -63,6 +77,10 @@ class SelectQuery(Generic[Model]):
         return self
 
     def limit(self, limit: int) -> Self:
+        """
+        Applies a sql LIMIT.
+        Note that calling this multiple times on the same query, will override the previously set limit.
+        """
         self.limit_clause = f"LIMIT {limit}"
         return self
 
@@ -73,8 +91,8 @@ class SelectQuery(Generic[Model]):
 
         table_name = orm.sql_table_name(self.model)
         query = f"""
-            SELECT {table_name}.*{extra}
-            FROM {table_name}
+            SELECT \"{table_name}\".*{extra}
+            FROM \"{table_name}\"
             {self.join_clause}
             {self.where_clause}
             {self.order_by_clause}
@@ -84,29 +102,40 @@ class SelectQuery(Generic[Model]):
 
         return db.execute(query)
 
-    def models(self, db: DbConnection) -> Iterable[Model]:
+    def models(self, db: DbConnection) -> list[Model]:
         cursor = self._execute(db)
-        return (self._to_model(row) for row in cursor)
+        return [self._to_model(row) for row in cursor]
 
-    def rows(self, db: DbConnection) -> Iterable[Row[Model]]:
+    def dicts(self, db: DbConnection) -> list[dict[str, Any]]:
+        rows = []
         cursor = self._execute(db)
-        return (
-            Row(
-                model=self._to_model(row),
-                extra=self._to_extra(row),
-            )
-            for row in cursor
-        )
+        for raw in cursor:
+            extra = dict()
+            for desc, value in zip(cursor.description, raw):
+                key = desc[0]
+                extra[key] = value
+            rows.append(extra)
+        return rows
 
-    def _to_model(self, row: tuple):
+    def rows(self, db: DbConnection) -> list[Row[Model]]:
+        rows = []
+        cursor = self._execute(db)
+        model_fields = set(field.name for field in dc.fields(self.model))
+        for raw in cursor:
+            extra = dict()
+            model_dict = dict()
+            for desc, value in zip(cursor.description, raw):
+                key = desc[0]
+                if key in model_fields:
+                    model_dict[key] = value
+                else:
+                    extra[key] = value
+            rows.append(Row(model=self.model(**model_dict), extra=extra))
+        return rows
+
+    def _to_model(self, row: tuple[Any, ...]) -> Model:
         return self.model(*row[: self.model_field_count])
 
-    def _to_extra(self, row: tuple):
-        extra = {}
-        rest = row[self.model_field_count :]
-        for name, value in zip(self.extra_columns, rest):
-            extra[name] = value
-        return extra
 
 
 def select(model: type[Model]) -> SelectQuery[Model]:
@@ -134,7 +163,7 @@ def upsert(
     model = type(records[0])
     table = orm.sql_table_name(model)
     columns = [field.name for field in dc.fields(model)]
-    to_sql = lambda row: to_sql_literal([getattr(row, col) for col in columns])
+    to_sql: Callable[[Model], str] = lambda row: to_sql_literal([getattr(row, col) for col in columns])
 
     on_conflict_clause = ""
     if len(update) > 0:
@@ -152,7 +181,7 @@ def upsert(
     )
 
 
-def get_fk_table(field: dc.Field) -> Optional[str]:
+def get_fk_table(field: dc.Field[Any]) -> Optional[str]:
     fk = field.metadata.get("fk")
     if not fk:
         return None

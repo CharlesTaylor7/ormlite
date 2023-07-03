@@ -1,7 +1,10 @@
+import logging
 from datetime import datetime, date
 
 from ormlite import orm
 from ormlite.orm import Adapter
+
+logger = logging.getLogger(__name__)
 
 
 def register():
@@ -11,19 +14,20 @@ def register():
 
 
 class BoolAdapter(Adapter[bool]):
-    sql_type = "BOOL"
+    sql_type = "BOOLEAN"
     python_type = bool
 
     def convert(self, b: bytes) -> bool:
-        if b == b"T":
+        if b == b"1":
             return True
-        elif b == b"F":
+        elif b == b"0":
             return False
         else:
-            raise Exception
+            logger.warning(f"adapting invalid bool with value of: {b}")
+            return True
 
     def adapt(self, val: bool) -> str:
-        return "T" if val else "F"
+        return "1" if val else "0"
 
 
 class DateAdapter(Adapter[date]):

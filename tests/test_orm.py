@@ -5,14 +5,13 @@ from datetime import datetime, date
 from typing import Union, Optional
 
 from ormlite import model, field, migrate
-from ormlite.errors import MissingAdapterError, InvalidForeignKeyError
+from ormlite.errors import MissingAdapterError, InvalidForeignKeyError, MultiplePrimaryKeysError
 from ormlite.orm import ForeignKey, to_sql_literal, to_sql_type
 from .utils import unregister_all_models
 
 
 def test_bare_model_decorator_is_not_supported():
     with pytest.raises(TypeError):
-
         @model
         class Foo:
             pass
@@ -47,6 +46,15 @@ def test_field_unions_not_supported():
         @model("triple_union")
         class Foo:
             bar: Union[str, int, float]
+
+
+def test_multiple_primary_keys():
+    with pytest.raises(MultiplePrimaryKeysError):
+        @model("items")
+        class Item:
+            id_1: int = field(pk=True)
+            id_2: str = field(pk=True)
+
 
 
 def test_foreign_key_punning():

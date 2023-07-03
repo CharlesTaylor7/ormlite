@@ -6,15 +6,13 @@ from typing import (
     dataclass_transform,
     Any,
     Optional,
-    Iterable,
     TypeVar,
     ClassVar,
     Generic,
     Protocol,
 )
-from datetime import datetime, date
 
-from ormlite.errors import MissingAdapterError, InvalidForeignKeyError
+from ormlite.errors import MissingAdapterError, InvalidForeignKeyError, MultiplePrimaryKeysError
 from ormlite.utils import get_optional_type_arg
 
 logger = logging.getLogger(__name__)
@@ -70,7 +68,7 @@ def model(sql_table_name: str):
     if isinstance(sql_table_name, type):
         raise TypeError("@model(sql_table_name) must be called with the sql table name")
 
-    def wrap(model: type):
+    def wrap(model: type) -> type:
         if sql_table_name in Context.TABLE_TO_MODEL:
             logger.warning(
                 f"Reregistering the sql table '{sql_table_name}' with {model}"
@@ -90,16 +88,22 @@ def model(sql_table_name: str):
 
 
 def validate_model(model: type):
+    has_primary = False
     for field in dc.fields(model):
         to_sql_type(field.type)
 
+        if field.metadata.get("pk"):
+            if has_primary:
+                raise MultiplePrimaryKeysError
+            else:
+                has_primary = True
 
 @dc.dataclass
 class ForeignKey:
     table: str
     key: Optional[str] = None
 
-    def to_constraint(self, field: dc.Field) -> str:
+    def to_constraint(self, field: dc.Field[Any]) -> str:
         return (
             f"FOREIGN KEY ({field.name}) "
             f"REFERENCES {self.table}({self.key or field.name})"
@@ -170,7 +174,7 @@ def to_sql_type(field: type) -> str:
     raise MissingAdapterError
 
 
-def column_def(field: dc.Field) -> str:
+def column_def(field: dc.Field[Any]) -> str:
     optional_inner_type = get_optional_type_arg(field.type)
 
     # not null is applied to all fields automatically

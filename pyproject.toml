@@ -1,6 +1,6 @@
 [project]
 name = "ormlite"
-version = "0.0.4"
+version = "0.1.0"
 readme = "README.md"
 license = { file = "LICENSE" }
 requires-python = ">=3.11"
@@ -29,5 +29,9 @@ reportUnusedImport = "information"
 reportUnusedVariable = "information"
 reportPrivateUsage = "error"
 # reportMissingTypeStubs = "warning"
+reportUnknownParameterType = "error"
 reportMissingParameterType = "error"
 reportSelfClsParameterName = "error"
+reportPropertyTypeMismatch = "error"
+reportIncompatibleMethodOverride = "error"
+reportUnknownLambdaType = "error"

@@ -1,7 +1,7 @@
 import re
 import dataclasses as dc
 import logging
-from typing import Any
+from typing import Any, Callable
 from collections.abc import Sequence
 
 from ormlite import orm
@@ -76,7 +76,7 @@ def parse_column_names(raw_table_sql: str) -> set[str]:
         raise Exception(f"regex failed to parse: {raw_table_sql}")
 
     defs = match.group("defs").strip().split(",")
-    get_name = lambda row: re.split(r"\s+", row.strip())[0]
+    get_name: Callable[[str], str] = lambda row: re.split(r"\s+", row.strip())[0]
     col_names = {
         name for row in defs for name in [get_name(row)] if IDENT.fullmatch(name)
     }
