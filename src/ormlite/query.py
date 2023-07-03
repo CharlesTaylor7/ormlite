@@ -116,10 +116,12 @@ def select(model: type[Model]) -> SelectQuery[Model]:
 def upsert(
     db: DbConnection, records: list[Model], *, update: list[str]
 ):  # pyright: ignore
-    """Insert records, on conflict, update fields but only specific ones
+    """
+    Insert records, on conflict, update fields but only specific ones
 
+    :param db: A sqlite database connection
     :param records: Records to insert or update
-    :type records: list[Model]
+    :param update: List of column names to update in case of conflict
     """
     # :param update: List of fields to update in the case of a conflict
     if len(records) == 0:
