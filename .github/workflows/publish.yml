@@ -51,6 +51,6 @@ jobs:
           python-version: ${{env.PYTHON_VERSION}}
       - name: Package wheel
         run: |
-          pip wheel . -w dist/
+          python3 -m build --wheel --sdist --outdir dist/
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1

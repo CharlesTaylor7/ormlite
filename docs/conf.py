@@ -10,7 +10,7 @@ project = 'ormlite'
 copyright = '2023, Charles Taylor'
 author = 'Charles Taylor'
 
-version = '0.0.3'
+version = '0.0.4'
 release = 'alpha'
 
 # General configuration
