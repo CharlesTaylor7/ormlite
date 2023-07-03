@@ -29,7 +29,7 @@ pip install ormlite
 Sample code:
 ```python3
 from datetime import datetime
-from ormlite import connect_to_sqlite, model, field, select, upsert
+from ormlite import connect_to_sqlite, migrate, model, field, select, upsert
 
 @model('persons')
 class Person:
@@ -39,12 +39,13 @@ class Person:
   last_seen: datetime = datetime.now()
 
 db = connect_to_sqlite("demo.db")
+migrate(db)
 
-upsert(db, [Person(23, "5'10\"")], update=[])
+upsert(db, [Person('me@me.com', 23, "5ft 10in")], update=[])
 
 models = select(Person).where("age = '23'").models(db)
-assert list(models) == [Person(23, "5'10\"")]
+print(list(models))
+# Output: [Person(email='me@me.com', age=23, height='5ft 10in', last_seen=datetime.datetime(...))]
 
 db.close()
 ```
-
