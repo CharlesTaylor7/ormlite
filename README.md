@@ -1,5 +1,6 @@
 [Read The Docs](https://ormlite.readthedocs.io/en/latest/)
 
+[PyPI](https://pypi.org/project/ormlite)
 <!---
 [![Checked with pyright](https://microsoft.github.io/pyright/img/pyright_badge.svg)](https://microsoft.github.io/pyright/)
 --->
