@@ -16,3 +16,4 @@
 - features:
   - optionally serialize migrations
   - interactive migration mode where each operation is approved
+  - Rework BoolAdapter to use integers instead of text. That will interop with existing sqlite tables better
