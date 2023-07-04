@@ -2,7 +2,7 @@ import logging
 import dataclasses as dc
 import sqlite3
 from typing import (
-    Self, Generic, TypeVar, Iterable, Optional, Any, Callable
+    Self, Generic, TypeVar, Optional, Any, Callable
 )
 from dataclasses import dataclass
 
@@ -53,7 +53,7 @@ class SelectQuery(Generic[Model]):
         self.extra_columns = list(fields)
         return self
 
-    def where(self, condition: Optional[str] = None, **kwargs) -> Self:
+    def where(self, condition: Optional[str] = None, **kwargs: Any) -> Self:
         if condition:
             for key, value in kwargs.items():
                 condition = condition.replace(f":{key}", to_sql_literal(value))
