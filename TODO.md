@@ -1,10 +1,10 @@
 # 1.0.0 Release
-  - [x] BoolAdapter uses integers instead of text. That will interop with existing sqlite tables better
-
 - Document public api
   - Code
   - Extract code docs to README
+
 - [x] Distribute ormlite, without packaging the test suite
+- [x] BoolAdapter uses integers instead of text. That will interop with existing sqlite tables better
 
 - [x] 100% code coverage
 - Workflows:
