@@ -3,18 +3,15 @@
 # For the full list of built-in configuration values, see the documentation:
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 
+# General configuration
+# https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = 'ormlite'
+from sphinx_pyproject import SphinxConfig
+
+config = SphinxConfig("../pyproject.toml", globalns=globals())
 copyright = '2023, Charles Taylor'
-author = 'Charles Taylor'
-
-version = '0.0.4'
-release = 'alpha'
-
-# General configuration
-# https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 extensions = [
     'sphinx.ext.autodoc',

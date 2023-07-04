@@ -13,6 +13,7 @@ classifiers = [
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3.11",
 ]
+description = "Two way binding from Python Dataclasses to Sqlite tables"
 
 [project.urls]
 "Github Repo" = "https://github.com/CharlesTaylor7/ormlite"
