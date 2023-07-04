@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 # - Renaming columns or tables can be done with manual sql at the cli
 # changing constraints, is a tricky multi step process:
 # https://sqlite.org/lang_altertable.html#making_other_kinds_of_table_schema_changes
-def run(db: DatabaseConnection):
+def migrate(db: DatabaseConnection):
     db.execute("""BEGIN EXCLUSIVE TRANSACTION""")
     cursor = db.execute(
         """

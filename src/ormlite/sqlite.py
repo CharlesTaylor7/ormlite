@@ -1,7 +1,7 @@
 import sqlite3
 
 
-def connect(file_name: str) -> sqlite3.Connection:
+def connect_to_sqlite(file_name: str) -> sqlite3.Connection:
     return sqlite3.connect(
         file_name,
         # auto-commit mode
