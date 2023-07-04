@@ -1,6 +1,6 @@
 [project]
 name = "ormlite"
-version = "0.2.0"
+version = "0.2.1"
 readme = "README.md"
 license = { file = "LICENSE" }
 requires-python = ">=3.11"
@@ -17,7 +17,7 @@ description = "Two way binding from Python Dataclasses to Sqlite tables"
 
 [project.urls]
 "Github Repo" = "https://github.com/CharlesTaylor7/ormlite"
-"Issue Tracker" = "https://github.com/CharlesTaylor7/ormlite/issues"
+"Read The Docs" = "https://ormlite.readthedocs.io/en/latest/"
 
 [project.optional-dependencies] 
 dev = [ "black", "pytest", "pytest-cov", "sphinx", "myst_parser" ]
