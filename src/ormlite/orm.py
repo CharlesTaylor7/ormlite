@@ -12,7 +12,11 @@ from typing import (
     Protocol,
 )
 
-from ormlite.errors import MissingAdapterError, InvalidForeignKeyError, MultiplePrimaryKeysError
+from ormlite.errors import (
+    MissingAdapterError,
+    InvalidForeignKeyError,
+    MultiplePrimaryKeysError,
+)
 from ormlite.utils import get_optional_type_arg
 
 logger = logging.getLogger(__name__)
@@ -97,6 +101,7 @@ def validate_model(model: type):
                 raise MultiplePrimaryKeysError
             else:
                 has_primary = True
+
 
 @dc.dataclass
 class ForeignKey:

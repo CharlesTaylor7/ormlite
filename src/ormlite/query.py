@@ -1,9 +1,8 @@
+from __future__ import annotations
 import logging
 import dataclasses as dc
 import sqlite3
-from typing import (
-    Self, Generic, TypeVar, Optional, Any, Callable
-)
+from typing import Generic, TypeVar, Optional, Any, Callable
 from dataclasses import dataclass
 
 from ormlite import orm
@@ -22,24 +21,43 @@ class Row(Generic[Model]):
 
 
 class SelectQuery(Generic[Model]):
-    db: DbConnection
-    model: type
-    join_clause = ""
-    where_clause = ""
-    order_by_clause = ""
-    limit_clause = ""
+    """
+    Select query builder.
+    This object is mutable and chainable way to describe a sql query.
+    These methods mutate the builder and return the builder to continue the chain:
+        - extra
+        - where
+        - limit
+        - join
+        - order_by
+
+    These methods execute the current query:
+        - rows
+        - models
+        - dicts
+    """
 
     def __init__(self, model: type[Model]):
         self.model = model
         self.model_field_count = len(dc.fields(self.model))
         self.extra_columns = []
+        self.join_clause = ""
+        self.where_clause = ""
+        self.order_by_clause = ""
+        self.limit_clause = ""
 
     # TODO: allow multiple joins via join dict ala ruby on rails
     # allow multiple calls to join
-    def join(self, table: type[Any]) -> Self:
-        target_table = orm.sql_table_name(table)
+    def join(self, model: type[Any], /) -> SelectQuery[Model]:
+        """
+        Join with another table.
+        :param: model
+        """
+        target_table = orm.sql_table_name(model)
         field = next(
-            field for field in dc.fields(self.model) if get_fk_table(field) == target_table
+            field
+            for field in dc.fields(self.model)
+            if get_fk_table(field) == target_table
         )
         self.join_clause = _prepare_join(
             source_table=orm.sql_table_name(self.model),
@@ -49,11 +67,11 @@ class SelectQuery(Generic[Model]):
         )
         return self
 
-    def extra(self, *fields: str) -> Self:
+    def extra(self, *fields: str) -> SelectQuery[Model]:
         self.extra_columns = list(fields)
         return self
 
-    def where(self, condition: Optional[str] = None, **kwargs: Any) -> Self:
+    def where(self, condition: Optional[str] = None, /, **kwargs: Any) -> SelectQuery[Model]:
         if condition:
             for key, value in kwargs.items():
                 condition = condition.replace(f":{key}", to_sql_literal(value))
@@ -72,11 +90,11 @@ class SelectQuery(Generic[Model]):
 
         return self
 
-    def order_by(self, clause: str) -> Self:
+    def order_by(self, clause: str, /) -> SelectQuery[Model]:
         self.order_by_clause = f"ORDER BY {clause}"
         return self
 
-    def limit(self, limit: int) -> Self:
+    def limit(self, limit: int, /) -> SelectQuery[Model]:
         """
         Applies a sql LIMIT.
         Note that calling this multiple times on the same query, will override the previously set limit.
@@ -137,10 +155,10 @@ class SelectQuery(Generic[Model]):
         return self.model(*row[: self.model_field_count])
 
 
-
 def select(model: type[Model]) -> SelectQuery[Model]:
     """
     Begin a select query.
+    Literally just an alias for the :class:`.SelectQuery` constructor.
 
     :param model: Model class; this determines which model is when binding the sql rows into python objects
     """
@@ -163,7 +181,9 @@ def upsert(
     model = type(records[0])
     table = orm.sql_table_name(model)
     columns = [field.name for field in dc.fields(model)]
-    to_sql: Callable[[Model], str] = lambda row: to_sql_literal([getattr(row, col) for col in columns])
+    to_sql: Callable[[Model], str] = lambda row: to_sql_literal(
+        [getattr(row, col) for col in columns]
+    )
 
     on_conflict_clause = ""
     if len(update) > 0:

@@ -9,5 +9,6 @@ class MissingAdapterError(Exception):
 class InvalidForeignKeyError(Exception):
     pass
 
+
 class MultiplePrimaryKeysError(Exception):
     pass

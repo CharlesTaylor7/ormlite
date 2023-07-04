@@ -1,7 +1,7 @@
 # 1.0.0 Release
 - Document public api
-  - Code
-  - Extract code docs to README
+  - [ ] Method docs
+  - [ ] Mark private modules with a leading underscore
 
 - [x] Distribute ormlite, without packaging the test suite
 - [x] BoolAdapter uses integers instead of text. That will interop with existing sqlite tables better

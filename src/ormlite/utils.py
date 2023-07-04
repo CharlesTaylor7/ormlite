@@ -3,7 +3,7 @@ import typing
 
 T = typing.TypeVar("T")
 
-# because typing.types.UnionType is not publicly exported 
+# because typing.types.UnionType is not publicly exported
 UNION_TYPE = typing.get_origin(str | float)
 
 

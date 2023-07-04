@@ -21,6 +21,21 @@ logger = logging.getLogger(__name__)
 # changing constraints, is a tricky multi step process:
 # https://sqlite.org/lang_altertable.html#making_other_kinds_of_table_schema_changes
 def migrate(db: DatabaseConnection):
+    """
+    Warning: This will destructively delete your data. Don't use this if want to keep old tables data around even if there's no corresponding python model.
+
+    Your python code is treated as the source of truth, and migrate forces your sqlite schema to match.
+
+    Every python class with the @model decorator is synced with a sqlite table.
+    Every sqlite table that has no corresponding model is deleted.
+
+    Specifically, this:
+        - Creates new tables to match new models
+        - Drops tables that don't correspond to any defined models
+        - Adds new columns to existing tables
+        - Drops old columns from existing tables
+
+    """
     db.execute("""BEGIN EXCLUSIVE TRANSACTION""")
     cursor = db.execute(
         """
