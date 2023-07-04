@@ -20,7 +20,7 @@ description = "Two way binding from Python Dataclasses to Sqlite tables"
 "Read The Docs" = "https://ormlite.readthedocs.io/en/latest/"
 
 [project.optional-dependencies] 
-dev = [ "black", "pytest", "pytest-cov", "sphinx", "myst_parser" ]
+dev = ["black", "pytest", "pytest-cov"]
 
 [tool.pyright]
 include = ["src/ormlite/"]
