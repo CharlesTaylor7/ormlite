@@ -41,7 +41,7 @@ I wanted to query a sqlite database, without writing verbose queries. Previously
 
 After I deciding to build my own library, I decided to embrace modern python idioms. So my library is built on top of the dataclasses library in the standard lib. 
 
-To keep scope small, ormlite only interops with sqlite, not other sql databases. I have no future plans to change this.
+To keep scope small, ormlite only interops with sqlite, not other sql databases.
 
 # Use case
 
