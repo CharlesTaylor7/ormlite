@@ -1,7 +1,9 @@
 # 1.0.0 Release
 - Document public api
-  - [ ] Method docs
-  - [ ] Mark private modules with a leading underscore
+  - [ ] field
+  - [ ] model
+  - [ ] Row
+  - [ ] SelectQuery
 
 - [x] Distribute ormlite, without packaging the test suite
 - [x] BoolAdapter uses integers instead of text. That will interop with existing sqlite tables better
