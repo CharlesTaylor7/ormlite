@@ -192,13 +192,16 @@ def upsert(
             SET {','.join(f'{col}=excluded.{col}' for col in update)}
         """
 
-    db.execute(
-        f"""
+    query = f"""
         INSERT INTO {table}({','.join(columns)})
         VALUES {','.join(to_sql(row) for row in records)}
         {on_conflict_clause}
-        """
-    )
+    """
+    try: 
+        db.execute(query)
+    except sqlite3.OperationalError  as e:
+        print(e)
+        print(query)
 
 
 def get_fk_table(field: dc.Field[Any]) -> Optional[str]:
